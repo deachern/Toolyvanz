@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Loading…</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --primary:#000;--primary-text:#fff;--accent:#4d8eff;
+  --bg:#f8f9fa;--surface:#fff;--text:#0d1117;--text-muted:#6e7681;
+  --border:#e1e4e8;--radius:12px;
+  --font:'Geist',sans-serif;
+}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
+
+/* Loader */
+#view-loader{
+  position:fixed;inset:0;background:var(--bg);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;
+  z-index:999;transition:opacity .4s;
+}
+#view-loader.hidden{opacity:0;pointer-events:none}
+.loader{display:flex;align-items:center}
+.bar{display:inline-block;width:3px;height:20px;background:rgba(0,0,0,.4);border-radius:10px;animation:scale-up4 1s linear infinite}
+.bar:nth-child(2){height:35px;margin:0 5px;animation-delay:.25s}
+.bar:nth-child(3){animation-delay:.5s}
+@keyframes scale-up4{20%{background:#000;transform:scaleY(1.5)}40%{transform:scaleY(1)}}
+
+/* Expired / Error */
+.error-page{
+  min-height:100vh;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;text-align:center;padding:40px;gap:16px;
+}
+.error-icon{font-size:64px;margin-bottom:8px}
+.error-title{font-size:1.5rem;font-weight:700;color:#0d1117}
+.error-sub{color:#6e7681;font-size:14px;max-width:360px}
+
+/* ══════════════════════════════════════
+   SUPPORT SITE VIEW
+══════════════════════════════════════ */
+#support-view{display:none}
+
+.support-nav{
+  height:64px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 32px;position:sticky;top:0;z-index:100;
+  background:var(--nav-bg,#fff);border-bottom:1px solid var(--nav-border,rgba(0,0,0,0.08));
+  backdrop-filter:blur(12px);
+}
+.nav-brand{display:flex;align-items:center;gap:10px}
+.nav-logo{width:32px;height:32px;border-radius:8px;object-fit:contain}
+.nav-logo-text{font-weight:800;font-size:1rem;letter-spacing:-0.02em}
+.nav-links{display:flex;gap:8px}
+.nav-link{
+  padding:7px 16px;border-radius:8px;font-size:13px;font-weight:500;
+  text-decoration:none;color:var(--nav-text,#0d1117);
+  transition:background .2s;cursor:pointer;
+}
+.nav-link:hover{background:rgba(0,0,0,0.06)}
+.nav-cta{
+  padding:8px 20px;border-radius:8px;font-size:13px;font-weight:600;
+  background:var(--primary);color:var(--primary-text);
+  text-decoration:none;cursor:pointer;border:none;font-family:var(--font);
+  transition:opacity .2s;
+}
+.nav-cta:hover{opacity:0.85}
+
+/* Hero */
+.support-hero{
+  padding:80px 32px;text-align:center;
+  background:var(--hero-bg,linear-gradient(135deg,#f0f7ff,#fff));
+  border-bottom:1px solid var(--border);
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;
+  letter-spacing:0.06em;text-transform:uppercase;margin-bottom:20px;
+  background:var(--badge-bg,rgba(0,82,255,0.1));color:var(--badge-text,#0052ff);
+}
+.hero-badge-dot{width:6px;height:6px;border-radius:50%;background:currentColor;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+.hero-title{font-size:2.8rem;font-weight:800;letter-spacing:-0.04em;margin-bottom:16px;line-height:1.1}
+.hero-sub{font-size:1rem;color:var(--text-muted);max-width:520px;margin:0 auto 32px}
+.hero-actions{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+.btn-primary{
+  padding:12px 28px;border-radius:10px;font-size:14px;font-weight:700;
+  background:var(--primary);color:var(--primary-text);
+  text-decoration:none;cursor:pointer;border:none;font-family:var(--font);
+  display:inline-flex;align-items:center;gap:6px;transition:opacity .2s;
+}
+.btn-primary:hover{opacity:0.85}
+.btn-secondary{
+  padding:12px 28px;border-radius:10px;font-size:14px;font-weight:600;
+  background:transparent;color:var(--text);border:1.5px solid var(--border);
+  text-decoration:none;cursor:pointer;font-family:var(--font);
+  display:inline-flex;align-items:center;gap:6px;transition:background .2s;
+}
+.btn-secondary:hover{background:rgba(0,0,0,0.04)}
+
+/* Support sections */
+.support-section{padding:60px 32px;max-width:1100px;margin:0 auto}
+.section-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--badge-bg,rgba(0,82,255,0.08));color:var(--badge-text,#0052ff);
+  padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;
+  text-transform:uppercase;letter-spacing:0.06em;margin-bottom:12px;
+}
+.section-title{font-size:1.6rem;font-weight:800;letter-spacing:-0.03em;margin-bottom:8px}
+.section-desc{color:var(--text-muted);font-size:14px;margin-bottom:32px}
+
+/* FAQ */
+.faq-list{display:flex;flex-direction:column;gap:8px;max-width:680px}
+.faq-item{
+  border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;
+  transition:border-color .2s;
+}
+.faq-item:hover{border-color:var(--primary)}
+.faq-q{
+  padding:16px 20px;display:flex;align-items:center;justify-content:space-between;
+  cursor:pointer;font-weight:600;font-size:14px;gap:12px;
+  background:var(--surface);
+}
+.faq-chevron{font-size:18px;color:var(--text-muted);transition:transform .2s;flex-shrink:0}
+.faq-a{
+  padding:0 20px;max-height:0;overflow:hidden;
+  transition:max-height .3s,padding .3s;font-size:13px;color:var(--text-muted);
+  line-height:1.7;
+}
+.faq-item.open .faq-a{max-height:200px;padding:0 20px 16px}
+.faq-item.open .faq-chevron{transform:rotate(180deg)}
+
+/* Features grid */
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.feature-card{
+  padding:24px;border:1px solid var(--border);border-radius:var(--radius);
+  background:var(--surface);
+}
+.feature-icon{
+  width:40px;height:40px;border-radius:10px;
+  background:var(--badge-bg,rgba(0,82,255,0.08));
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:12px;font-size:20px;
+}
+.feature-icon .material-symbols-outlined{font-size:20px;color:var(--badge-text,#0052ff)}
+.feature-title{font-weight:700;font-size:14px;margin-bottom:4px}
+.feature-desc{font-size:13px;color:var(--text-muted);line-height:1.6}
+
+/* ══════════════════════════════════════
+   RECEIPT VIEW
+══════════════════════════════════════ */
+#receipt-view{display:none}
+
+.receipt-page{
+  min-height:100vh;display:flex;flex-direction:column;align-items:center;
+  padding:40px 20px;
+  background:var(--receipt-bg,#f5f5f5);
+}
+.receipt-header{
+  width:100%;max-width:480px;display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:24px;
+}
+.receipt-brand{display:flex;align-items:center;gap:8px;font-weight:800;font-size:1rem}
+.receipt-secure{display:flex;align-items:center;gap:4px;font-size:11px;color:#6e7681}
+.receipt-secure .material-symbols-outlined{font-size:14px;color:#00C805}
+
+.receipt-card{
+  width:100%;max-width:480px;
+  background:var(--receipt-surface,#fff);
+  border-radius:16px;overflow:hidden;
+  box-shadow:0 4px 24px rgba(0,0,0,0.12);
+}
+.receipt-card-header{
+  padding:24px;border-bottom:1px solid var(--receipt-border,#f0f0f0);
+  display:flex;align-items:center;gap:14px;
+}
+.receipt-platform-icon{
+  width:48px;height:48px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;
+  background:var(--primary,#000);flex-shrink:0;
+}
+.receipt-platform-name{font-weight:800;font-size:1.1rem;letter-spacing:-0.02em}
+.receipt-type-badge{
+  padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;
+  text-transform:uppercase;letter-spacing:0.06em;
+  margin-top:2px;display:inline-block;
+}
+.receipt-card-body{padding:24px}
+
+.receipt-amount-row{
+  text-align:center;padding:20px 0;border-bottom:1px solid var(--receipt-border,#f0f0f0);
+  margin-bottom:20px;
+}
+.receipt-amount-label{font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted,#6e7681);margin-bottom:6px}
+.receipt-amount-value{font-size:2.4rem;font-weight:800;letter-spacing:-0.04em}
+.receipt-amount-asset{font-size:14px;color:var(--text-muted,#6e7681);margin-top:4px}
+
+.receipt-row{
+  display:flex;align-items:flex-start;justify-content:space-between;
+  padding:10px 0;border-bottom:1px solid var(--receipt-border,#f0f0f0);
+  font-size:13px;gap:16px;
+}
+.receipt-row:last-child{border-bottom:none}
+.receipt-row-label{color:var(--text-muted,#6e7681);flex-shrink:0}
+.receipt-row-value{font-weight:600;text-align:right;word-break:break-all;color:var(--text,#0d1117)}
+.receipt-row-value.monospace{font-family:'Courier New',monospace;font-size:11px}
+
+.receipt-status-row{
+  display:flex;align-items:center;gap:6px;
+  padding:12px 16px;border-radius:8px;
+  background:rgba(0,200,5,0.08);margin:16px 0;
+}
+.receipt-status-dot{width:8px;height:8px;border-radius:50%;background:#00C805;animation:pulse 2s infinite;flex-shrink:0}
+.receipt-status-text{font-size:13px;font-weight:600;color:#00C805}
+
+.receipt-card-footer{
+  padding:16px 24px;background:var(--receipt-footer,#fafafa);
+  border-top:1px solid var(--receipt-border,#f0f0f0);
+  display:flex;align-items:center;justify-content:space-between;
+  font-size:11px;color:var(--text-muted,#6e7681);
+}
+
+.receipt-actions{
+  width:100%;max-width:480px;display:flex;gap:10px;margin-top:16px;
+}
+.receipt-action-btn{
+  flex:1;padding:12px;border-radius:10px;font-size:13px;font-weight:600;
+  cursor:pointer;border:none;font-family:var(--font);display:flex;align-items:center;justify-content:center;gap:6px;
+  transition:opacity .2s;
+}
+.receipt-action-btn.primary{background:var(--primary,#000);color:var(--primary-text,#fff)}
+.receipt-action-btn.secondary{background:transparent;border:1.5px solid #e1e4e8;color:#0d1117}
+.receipt-action-btn:hover{opacity:0.85}
+
+/* Floating contact button */
+.float-contact{
+  position:fixed;bottom:28px;right:28px;z-index:1000;
+}
+.float-btn{
+  display:flex;align-items:center;gap:8px;
+  padding:14px 22px;border-radius:50px;font-size:14px;font-weight:700;
+  background:var(--primary);color:var(--primary-text);
+  box-shadow:0 8px 24px rgba(0,0,0,0.25);
+  cursor:pointer;border:none;font-family:var(--font);
+  text-decoration:none;transition:transform .2s,box-shadow .2s;
+  animation:float-in .5s .3s both;
+}
+.float-btn:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(0,0,0,0.3)}
+@keyframes float-in{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.float-btn .material-symbols-outlined{font-size:18px}
+
+/* Expiry banner */
+.expiry-banner{
+  background:rgba(255,180,0,0.12);border-bottom:1px solid rgba(255,180,0,0.3);
+  padding:8px 20px;text-align:center;font-size:12px;font-weight:500;color:#b45309;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+}
+.expiry-banner .material-symbols-outlined{font-size:15px}
+
+@media(max-width:600px){
+  .support-hero{padding:50px 20px}
+  .hero-title{font-size:1.8rem}
+  .features-grid{grid-template-columns:1fr}
+  .support-nav{padding:0 16px}
+  .support-section{padding:40px 20px}
+  .receipt-page{padding:24px 12px}
+}
+</style>
+</head>
+<body>
+
+<div id="view-loader">
+  <div style="font-family:'Geist',sans-serif;font-size:1.2rem;font-weight:700;margin-bottom:16px;letter-spacing:-0.02em">Loading…</div>
+  <div class="loader">
+    <div class="bar"></div>
+    <div class="bar"></div>
+    <div class="bar"></div>
+  </div>
+</div>
+
+<!-- SUPPORT SITE VIEW -->
+<div id="support-view">
+  <div class="expiry-banner" id="expiry-banner" style="display:none">
+    <span class="material-symbols-outlined">schedule</span>
+    <span id="expiry-text">Expires in X days</span>
+  </div>
+  <nav class="support-nav" id="support-nav">
+    <div class="nav-brand">
+      <div id="nav-platform-icon" style="width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:16px;background:#000"></div>
+      <span id="nav-platform-name" class="nav-logo-text">Platform</span>
+      <span style="font-size:10px;padding:2px 6px;border-radius:4px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-left:4px;background:rgba(0,0,0,0.08);color:#666">Support</span>
+    </div>
+    <div class="nav-links" id="nav-links">
+      <span class="nav-link">Help Center</span>
+      <span class="nav-link">FAQs</span>
+      <span class="nav-link">Status</span>
+    </div>
+    <button class="nav-cta" id="nav-cta-btn" onclick="triggerContact()">Contact Support</button>
+  </nav>
+
+  <div class="support-hero" id="support-hero">
+    <div class="hero-badge" id="hero-badge">
+      <span class="hero-badge-dot"></span>
+      <span id="hero-badge-text">Support Online</span>
+    </div>
+    <h1 class="hero-title" id="hero-title">We're here to help</h1>
+    <p class="hero-sub" id="hero-sub">Our support team is ready to assist you with any questions about your account, transactions, or platform features.</p>
+    <div class="hero-actions">
+      <button class="btn-primary" id="hero-cta" onclick="triggerContact()">
+        <span class="material-symbols-outlined" style="font-size:16px" id="hero-icon">chat</span>
+        <span id="hero-cta-text">Contact Support</span>
+      </button>
+      <button class="btn-secondary" onclick="document.getElementById('faq-section').scrollIntoView({behavior:'smooth'})">
+        <span class="material-symbols-outlined" style="font-size:16px">help_outline</span>
+        Browse FAQs
+      </button>
+    </div>
+  </div>
+
+  <!-- Features section -->
+  <div class="support-section">
+    <div class="section-badge"><span class="material-symbols-outlined" style="font-size:14px">verified</span> Verified Support</div>
+    <h2 class="section-title" id="features-title">Official Support Channels</h2>
+    <p class="section-desc">Get help from our verified team across multiple channels.</p>
+    <div class="features-grid" id="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon"><span class="material-symbols-outlined">speed</span></div>
+        <div class="feature-title">Fast Response</div>
+        <div class="feature-desc">Average response time under 2 hours for all inquiries.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><span class="material-symbols-outlined">lock</span></div>
+        <div class="feature-title">Secure & Verified</div>
+        <div class="feature-desc">All agents are verified and follow strict security protocols.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><span class="material-symbols-outlined">schedule</span></div>
+        <div class="feature-title">24/7 Available</div>
+        <div class="feature-desc">Support team available around the clock, every day.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="support-section" id="faq-section" style="background:var(--surface,#fff);border-top:1px solid var(--border,#e1e4e8);border-bottom:1px solid var(--border,#e1e4e8)">
+    <div class="section-badge"><span class="material-symbols-outlined" style="font-size:14px">quiz</span> FAQs</div>
+    <h2 class="section-title">Common Questions</h2>
+    <p class="section-desc">Quick answers to frequently asked questions.</p>
+    <div class="faq-list" id="faq-list"></div>
+  </div>
+
+  <!-- Contact CTA -->
+  <div class="support-section" style="text-align:center">
+    <h2 class="section-title" style="max-width:460px;margin:0 auto 12px">Still need help?</h2>
+    <p class="section-desc" style="margin:0 auto 28px">Our support team is standing by. Reach out directly.</p>
+    <button class="btn-primary" onclick="triggerContact()" style="margin:0 auto;display:inline-flex">
+      <span class="material-symbols-outlined" style="font-size:16px" id="final-cta-icon">chat</span>
+      <span id="final-cta-text">Contact Support Now</span>
+    </button>
+  </div>
+
+  <footer style="background:#f8f9fa;border-top:1px solid #e1e4e8;padding:20px 32px;text-align:center;font-size:11px;color:#6e7681">
+    <span id="footer-platform-name">Platform</span> Support Center · Powered by Toolyvans
+  </footer>
+
+  <!-- Floating contact button -->
+  <div class="float-contact">
+    <a class="float-btn" id="float-contact-btn" onclick="triggerContact()">
+      <span class="material-symbols-outlined" id="float-icon">chat</span>
+      <span id="float-text">Get Support</span>
+    </a>
+  </div>
+</div>
+
+<!-- RECEIPT VIEW -->
+<div id="receipt-view">
+  <div class="receipt-page" id="receipt-page">
+    <div class="receipt-header">
+      <div class="receipt-brand">
+        <span id="receipt-platform-icon-hdr" style="font-size:20px"></span>
+        <span id="receipt-platform-name-hdr">Platform</span>
+      </div>
+      <div class="receipt-secure">
+        <span class="material-symbols-outlined">verified_user</span>
+        Secured & Verified
+      </div>
+    </div>
+
+    <div class="receipt-card">
+      <div class="receipt-card-header">
+        <div class="receipt-platform-icon" id="receipt-icon-main"></div>
+        <div>
+          <div class="receipt-platform-name" id="receipt-platform-name-main">Platform</div>
+          <span class="receipt-type-badge" id="receipt-type-badge">BUY</span>
+        </div>
+      </div>
+
+      <div class="receipt-card-body">
+        <div class="receipt-amount-row">
+          <div class="receipt-amount-label">Total Value</div>
+          <div class="receipt-amount-value" id="receipt-total-value">$0.00</div>
+          <div class="receipt-amount-asset" id="receipt-asset-info">0.00 BTC @ $0.00</div>
+        </div>
+
+        <div class="receipt-status-row">
+          <div class="receipt-status-dot"></div>
+          <div class="receipt-status-text" id="receipt-status-text">Transaction Successful</div>
+        </div>
+
+        <div class="receipt-row">
+          <span class="receipt-row-label">Transaction ID</span>
+          <span class="receipt-row-value monospace" id="receipt-txid">—</span>
+        </div>
+        <div class="receipt-row">
+          <span class="receipt-row-label">Date & Time</span>
+          <span class="receipt-row-value" id="receipt-date">—</span>
+        </div>
+        <div class="receipt-row">
+          <span class="receipt-row-label">Asset</span>
+          <span class="receipt-row-value" id="receipt-asset">—</span>
+        </div>
+        <div class="receipt-row">
+          <span class="receipt-row-label">Amount</span>
+          <span class="receipt-row-value" id="receipt-amount">—</span>
+        </div>
+        <div class="receipt-row">
+          <span class="receipt-row-label">Price per Unit</span>
+          <span class="receipt-row-value" id="receipt-price">—</span>
+        </div>
+        <div class="receipt-row">
+          <span class="receipt-row-label">Fee</span>
+          <span class="receipt-row-value" id="receipt-fee">—</span>
+        </div>
+        <div class="receipt-row" id="wallet-row" style="display:none">
+          <span class="receipt-row-label">Wallet Address</span>
+          <span class="receipt-row-value monospace" id="receipt-wallet">—</span>
+        </div>
+        <div class="receipt-row">
+          <span class="receipt-row-label">Platform</span>
+          <span class="receipt-row-value" id="receipt-platform-row">—</span>
+        </div>
+        <div class="receipt-row">
+          <span class="receipt-row-label">Status</span>
+          <span class="receipt-row-value" style="color:#00C805;font-weight:700">✓ Confirmed</span>
+        </div>
+      </div>
+
+      <div class="receipt-card-footer">
+        <span id="receipt-footer-platform">Platform Receipt</span>
+        <span id="receipt-footer-date">—</span>
+      </div>
+    </div>
+
+    <div class="receipt-actions">
+      <button class="receipt-action-btn primary" id="receipt-action-primary" onclick="window.print()">
+        <span class="material-symbols-outlined" style="font-size:16px">download</span>
+        Download
+      </button>
+      <button class="receipt-action-btn secondary" onclick="navigator.clipboard.writeText(window.location.href).then(()=>alert('Link copied!'))">
+        <span class="material-symbols-outlined" style="font-size:16px">share</span>
+        Share Link
+      </button>
+    </div>
+
+    <div style="margin-top:16px;font-size:11px;color:#9e9e9e;text-align:center">
+      This receipt is generated by Toolyvans · Valid until <span id="receipt-expiry-footer">—</span>
+    </div>
+  </div>
+</div>
+
+<!-- ERROR VIEW -->
+<div id="error-view" style="display:none">
+  <div class="error-page">
+    <div class="error-icon" id="error-icon">⏳</div>
+    <div class="error-title" id="error-title">Content Expired</div>
+    <div class="error-sub" id="error-sub">This link has expired or no longer exists.</div>
+    <a href="/" style="margin-top:20px;padding:10px 24px;background:#0d1117;color:#fff;border-radius:8px;text-decoration:none;font-weight:600;font-size:13px">Back to Toolyvans</a>
+  </div>
+</div>
+
+<script>
+// Platform brand data
+const PLATFORMS = {
+  binance: { name:'Binance', color:'#F3BA2F', bg:'#181A20', text:'#F3BA2F', emoji:'🟡',
+    faq:[
+      {q:'How do I reset my password?',a:'Visit the Binance login page and click "Forgot Password". Enter your email and follow the reset link sent to your inbox.'},
+      {q:'Why is my withdrawal delayed?',a:'Withdrawals may be delayed due to security reviews, network congestion, or verification requirements. Typically resolved within 24 hours.'},
+      {q:'How do I complete KYC verification?',a:'Go to Account > Identification and follow the steps to upload your ID and selfie. Verification usually completes within 30 minutes.'},
+      {q:'What are the trading fees on Binance?',a:'Spot trading fees start at 0.1%. Use BNB to pay fees for a 25% discount on trading fees.'},
+      {q:'How do I enable 2FA security?',a:'Go to Security settings and enable Google Authenticator or SMS 2FA for enhanced account protection.'}
+    ]},
+  bybit: { name:'Bybit', color:'#F7A600', bg:'#1C1C1E', text:'#F7A600', emoji:'🟠',
+    faq:[
+      {q:'How do I deposit to Bybit?',a:'Navigate to Assets > Deposit, select your coin, and copy the deposit address. Minimum deposit varies by cryptocurrency.'},
+      {q:'What leverage is available on Bybit?',a:'Bybit offers up to 100x leverage on derivatives trading. Set your leverage in the trading interface.'},
+      {q:'How do I withdraw funds?',a:'Go to Assets > Withdrawal, select your coin and network, enter your wallet address and amount, then confirm via email/2FA.'},
+      {q:'What is the funding rate?',a:'The funding rate is exchanged between long and short positions every 8 hours to keep perpetual contract prices close to spot.'},
+      {q:'How can I contact support?',a:'Use the live chat in the bottom right corner of this page, or submit a ticket through the support center.'}
+    ]},
+  coinbase: { name:'Coinbase', color:'#0052FF', bg:'#FFFFFF', text:'#0052FF', emoji:'🔵',
+    faq:[
+      {q:'How do I buy cryptocurrency on Coinbase?',a:'Click Buy/Sell, select your crypto, choose a payment method, enter the amount, and confirm the purchase.'},
+      {q:'How long do deposits take?',a:'Bank transfers take 3-5 business days. Instant purchases with debit card are available for an additional fee.'},
+      {q:'What is Coinbase One?',a:'Coinbase One is a premium subscription offering zero trading fees, priority support, and enhanced account protections.'},
+      {q:'How do I report unauthorized activity?',a:'Immediately lock your account in Security Settings, change your password, and contact our support team urgently.'},
+      {q:'Are my funds insured?',a:'USD balances in your Coinbase account are FDIC insured up to $250,000. Crypto assets are stored securely in cold storage.'}
+    ]},
+  metamask: { name:'MetaMask', color:'#E8821A', bg:'#FFFFFF', text:'#E8821A', emoji:'🦊',
+    faq:[
+      {q:'I forgot my MetaMask password. What do I do?',a:'You can restore your wallet using your 12-word Secret Recovery Phrase. Never share this phrase with anyone.'},
+      {q:'Why is my transaction pending?',a:'Transactions may be pending due to low gas fees. You can speed up or cancel pending transactions in MetaMask.'},
+      {q:'How do I add a custom network?',a:'Go to Settings > Networks > Add Network and enter the RPC URL, Chain ID, and token symbol for your network.'},
+      {q:'What is a gas fee?',a:'Gas fees are payments to Ethereum network validators for processing transactions. They vary based on network congestion.'},
+      {q:'How do I import a wallet?',a:'Click the account icon > Import Account and paste your private key or use your Secret Recovery Phrase.'}
+    ]},
+  trustwallet: { name:'Trust Wallet', color:'#3375BB', bg:'#FFFFFF', text:'#3375BB', emoji:'🔷',
+    faq:[
+      {q:'How do I backup my wallet?',a:'Go to Settings > Wallets, select your wallet, and tap "Backup". Write down your 12-word recovery phrase and store it securely.'},
+      {q:'Can I use Trust Wallet on multiple devices?',a:'Yes, import your wallet on the new device using your recovery phrase. Never share this phrase with others.'},
+      {q:'Why is my balance not showing?',a:'Try refreshing the app. Also check if you are viewing the correct blockchain network for your assets.'},
+      {q:'How do I buy crypto directly in Trust Wallet?',a:'Tap "Buy" on the home screen, select your crypto and payment method. We partner with Transak and MoonPay.'},
+      {q:'Is Trust Wallet safe?',a:'Trust Wallet is a non-custodial wallet — we never store your private keys. Only you control your funds.'}
+    ]},
+  robinhood: { name:'Robinhood', color:'#00C805', bg:'#FFFFFF', text:'#00C805', emoji:'🟢',
+    faq:[
+      {q:'How do I transfer funds to Robinhood?',a:'Go to Account > Transfers > Transfer to Robinhood. Bank transfers typically take 3-5 business days.'},
+      {q:'What cryptocurrencies can I trade?',a:'Robinhood supports Bitcoin, Ethereum, Dogecoin, Shiba Inu, and several other major cryptocurrencies.'},
+      {q:'How do I sell my stocks or crypto?',a:'Tap on the asset, select Sell, enter the amount or shares, review your order, and confirm.'},
+      {q:'What is Robinhood Gold?',a:'Robinhood Gold is a premium account offering margin investing, larger instant deposits, and professional market data.'},
+      {q:'How are dividends handled?',a:'Cash dividends are automatically deposited to your Robinhood account on the payment date.'}
+    ]},
+  phantom: { name:'Phantom', color:'#9945FF', bg:'#FFFFFF', text:'#9945FF', emoji:'👻',
+    faq:[
+      {q:'How do I create a Phantom wallet?',a:'Download the Phantom extension or app, click "Create New Wallet", and safely store your Secret Recovery Phrase.'},
+      {q:'How do I buy SOL in Phantom?',a:'Tap "Buy" in your wallet and use MoonPay or another supported provider to purchase SOL directly.'},
+      {q:'Why is my NFT not showing?',a:'Try refreshing your wallet or switching networks. Some NFTs may need to be added manually using the NFT tab.'},
+      {q:'How do I swap tokens?',a:'Open Phantom, tap the Swap icon, select your tokens, enter the amount, review the rate, and confirm.'},
+      {q:'What is Solana?',a:'Solana is a high-performance blockchain supporting fast, low-cost transactions. Phantom is the leading Solana wallet.'}
+    ]},
+  kraken: { name:'Kraken', color:'#5741D9', bg:'#FFFFFF', text:'#5741D9', emoji:'🐙',
+    faq:[
+      {q:'How do I verify my Kraken account?',a:'Go to Account Settings > Verification and upload the required documents for your verification tier.'},
+      {q:'What are Kraken trading fees?',a:'Maker fees start at 0.16% and taker fees at 0.26%. Fees decrease with higher trading volume.'},
+      {q:'How do I enable staking on Kraken?',a:'Go to the Staking section, select your asset, and follow the steps to start earning staking rewards.'},
+      {q:'What is Kraken Pro?',a:'Kraken Pro is our advanced trading interface with charting tools, order types, and lower fees for active traders.'},
+      {q:'How secure is Kraken?',a:'Kraken uses industry-leading security with 95% cold storage, 2FA, master key, and PGP email encryption.'}
+    ]},
+  kucoin: { name:'KuCoin', color:'#23AF91', bg:'#FFFFFF', text:'#23AF91', emoji:'🐢',
+    faq:[
+      {q:'How do I deposit on KuCoin?',a:'Go to Assets > Deposit, select your coin and network, and copy the deposit address.'},
+      {q:'What is KCS?',a:'KCS (KuCoin Token) is KuCoin\'s native token offering fee discounts, daily bonuses, and voting rights.'},
+      {q:'How do I trade futures on KuCoin?',a:'Switch to the Futures tab, select your trading pair, set your leverage, and place your order.'},
+      {q:'What are KuCoin trading fees?',a:'Spot trading fees are 0.1%. Holders of 1,000+ KCS receive a 20% discount on trading fees.'},
+      {q:'How does KuCoin P2P trading work?',a:'P2P trading lets you buy/sell crypto directly with other users using bank transfers and local payment methods.'}
+    ]},
+  okx: { name:'OKX', color:'#FFFFFF', bg:'#000000', text:'#FFFFFF', emoji:'⚫',
+    faq:[
+      {q:'How do I create an OKX account?',a:'Download the OKX app or visit okx.com, click Sign Up, and complete the registration with your email or phone.'},
+      {q:'What trading options are available?',a:'OKX offers spot, margin, futures, perpetual swaps, and options trading across hundreds of cryptocurrency pairs.'},
+      {q:'How do I withdraw funds from OKX?',a:'Go to Assets > Withdraw, select your coin and network, enter your external wallet address, and confirm.'},
+      {q:'What is the OKB token?',a:'OKB is OKX\'s utility token that provides trading fee discounts, access to token sales, and governance rights.'},
+      {q:'How do I set up API trading?',a:'Go to Account > API and create an API key with the required permissions. Never share your secret key.'}
+    ]}
+};
+
+function getPlatform(key) {
+  return PLATFORMS[key] || { name: key, color:'#4d8eff', bg:'#fff', text:'#4d8eff', emoji:'💎', faq:[] };
+}
+
+async function init() {
+  // Get slug from URL path: /view/[slug]
+  const path = window.location.pathname;
+  const slug = path.replace('/view/', '').replace(/^\/+|\/+$/g, '');
+
+  if (!slug) { showError('not_found'); return; }
+
+  try {
+    const API = window.location.hostname === 'localhost' ? 'http://localhost:3000' : '';
+    const res = await fetch(API + '/api/view/' + slug);
+    const data = await res.json();
+
+    if (!res.ok) {
+      showError(data.error || 'not_found', data.message);
+      return;
+    }
+
+    if (data.type === 'support-site') renderSupportSite(data.data);
+    else if (data.type === 'receipt') renderReceipt(data.data);
+    else showError('not_found');
+
+  } catch(e) {
+    showError('not_found', 'Could not load content.');
+  }
+
+  document.getElementById('view-loader').classList.add('hidden');
+}
+
+function showError(type, msg) {
+  document.getElementById('view-loader').classList.add('hidden');
+  document.getElementById('error-view').style.display = 'block';
+  if (type === 'expired') {
+    document.getElementById('error-icon').textContent = '⏳';
+    document.getElementById('error-title').textContent = 'Link Expired';
+    document.getElementById('error-sub').textContent = msg || 'This content has expired and is no longer available.';
+  } else {
+    document.getElementById('error-icon').textContent = '🔍';
+    document.getElementById('error-title').textContent = 'Not Found';
+    document.getElementById('error-sub').textContent = msg || 'This link does not exist or has been removed.';
+  }
+}
+
+function renderSupportSite(site) {
+  const p = getPlatform(site.platform);
+  
+  // Apply platform theme as CSS vars
+  const root = document.documentElement;
+  root.style.setProperty('--primary', p.color === '#FFFFFF' ? p.bg : p.color);
+  root.style.setProperty('--primary-text', p.color === '#FFFFFF' ? '#fff' : (p.bg === '#181A20' || p.bg === '#000000' ? '#fff' : '#000'));
+  root.style.setProperty('--badge-bg', hexToRgba(p.color, 0.1));
+  root.style.setProperty('--badge-text', p.color === '#FFFFFF' ? '#000' : p.color);
+  
+  // Dark platform adjustments
+  const isDark = p.bg === '#181A20' || p.bg === '#1C1C1E' || p.bg === '#000000';
+  if (isDark) {
+    root.style.setProperty('--nav-bg', p.bg + 'ee');
+    root.style.setProperty('--nav-border', 'rgba(255,255,255,0.1)');
+    root.style.setProperty('--nav-text', '#fff');
+    root.style.setProperty('--bg', '#0d1117');
+    root.style.setProperty('--surface', '#161b22');
+    root.style.setProperty('--border', 'rgba(255,255,255,0.1)');
+    root.style.setProperty('--text', '#f0f6fc');
+    root.style.setProperty('--text-muted', '#8b949e');
+    root.style.setProperty('--hero-bg', `linear-gradient(135deg, ${p.bg}, #0d1117)`);
+    document.body.style.background = '#0d1117';
+    document.body.style.color = '#f0f6fc';
+  } else {
+    root.style.setProperty('--hero-bg', `linear-gradient(135deg, ${hexToRgba(p.color, 0.05)}, #ffffff)`);
+  }
+
+  // Page title
+  document.title = `${p.name} Support Center`;
+
+  // Nav
+  document.getElementById('nav-platform-icon').textContent = p.emoji;
+  document.getElementById('nav-platform-icon').style.background = p.bg;
+  document.getElementById('nav-platform-name').textContent = p.name;
+  document.getElementById('nav-cta-btn').style.background = p.color;
+  document.getElementById('nav-cta-btn').style.color = isDark ? p.bg : '#000';
+
+  // Hero
+  document.getElementById('hero-badge-text').textContent = p.name + ' Support Online';
+  document.getElementById('hero-title').textContent = 'How can we help you?';
+  document.getElementById('hero-sub').textContent = `Welcome to the official ${p.name} Support Center. Our team is available 24/7 to assist with your account, transactions, and platform questions.`;
+  document.getElementById('hero-cta').style.background = p.color;
+  document.getElementById('hero-cta').style.color = isDark ? p.bg : '#000';
+
+  // Set contact icons
+  const contactMethod = site.contactMethod;
+  const iconMap = { email:'mail', whatsapp:'chat', telegram:'send', chatbot:'smart_toy' };
+  const textMap = { email:'Email Support', whatsapp:'WhatsApp Us', telegram:'Telegram Chat', chatbot:'Live Chat' };
+  const icon = iconMap[contactMethod] || 'chat';
+  const ctaText = textMap[contactMethod] || 'Contact Support';
+  
+  document.getElementById('hero-icon').textContent = icon;
+  document.getElementById('hero-cta-text').textContent = ctaText;
+  document.getElementById('float-icon').textContent = icon;
+  document.getElementById('float-text').textContent = ctaText;
+  document.getElementById('final-cta-icon').textContent = icon;
+  document.getElementById('final-cta-text').textContent = ctaText;
+
+  // Float button color
+  document.getElementById('float-contact-btn').style.background = p.color;
+  document.getElementById('float-contact-btn').style.color = isDark ? p.bg : '#000';
+
+  // Features color
+  document.querySelectorAll('.feature-icon').forEach(el => {
+    el.style.background = hexToRgba(p.color, 0.1);
+    el.querySelectorAll('.material-symbols-outlined').forEach(i => i.style.color = p.color);
+  });
+  document.querySelectorAll('.section-badge').forEach(el => {
+    el.style.background = hexToRgba(p.color, 0.1);
+    el.style.color = p.color === '#FFFFFF' ? '#000' : p.color;
+  });
+
+  // Store contact info for button handler
+  window._supportContact = { method: site.contactMethod, value: site.contactValue, chatbot: site.chatbotCode };
+
+  // FAQ
+  const faqs = p.faq;
+  document.getElementById('faq-list').innerHTML = faqs.map((f,i) => `
+    <div class="faq-item" onclick="toggleFaq(${i})">
+      <div class="faq-q">
+        <span>${f.q}</span>
+        <span class="material-symbols-outlined faq-chevron">expand_more</span>
+      </div>
+      <div class="faq-a">${f.a}</div>
+    </div>`).join('');
+
+  // Footer
+  document.getElementById('footer-platform-name').textContent = p.name;
+
+  // Expiry banner
+  const daysLeft = Math.ceil((new Date(site.expiresAt) - new Date()) / (1000*60*60*24));
+  if (daysLeft <= 3 && daysLeft > 0) {
+    document.getElementById('expiry-banner').style.display = 'flex';
+    document.getElementById('expiry-text').textContent = `This support site expires in ${daysLeft} day${daysLeft!==1?'s':''}`;
+  }
+
+  // If chatbot embed
+  if (site.contactMethod === 'chatbot' && site.chatbotCode) {
+    const el = document.createElement('div');
+    el.innerHTML = site.chatbotCode;
+    document.body.appendChild(el);
+  }
+
+  document.getElementById('support-view').style.display = 'block';
+}
+
+function renderReceipt(receipt) {
+  const p = getPlatform(receipt.platform);
+  
+  // Apply receipt colors
+  const isDark = p.bg === '#181A20' || p.bg === '#1C1C1E' || p.bg === '#000000';
+  document.getElementById('receipt-page').style.background = isDark ? '#0d1117' : '#f5f5f5';
+  
+  document.documentElement.style.setProperty('--primary', p.color === '#FFFFFF' ? '#000' : p.color);
+  document.documentElement.style.setProperty('--primary-text', '#fff');
+  document.documentElement.style.setProperty('--receipt-surface', isDark ? '#1c1c1e' : '#fff');
+  document.documentElement.style.setProperty('--receipt-border', isDark ? 'rgba(255,255,255,0.1)' : '#f0f0f0');
+  document.documentElement.style.setProperty('--receipt-footer', isDark ? '#111' : '#fafafa');
+  
+  if (isDark) {
+    document.body.style.background = '#0d1117';
+    document.documentElement.style.setProperty('--text', '#f0f6fc');
+    document.documentElement.style.setProperty('--text-muted', '#8b949e');
+  }
+
+  document.title = `${p.name} ${receipt.tradeType} Receipt — ${receipt.asset}`;
+
+  // Header
+  document.getElementById('receipt-platform-icon-hdr').textContent = p.emoji;
+  document.getElementById('receipt-platform-name-hdr').textContent = p.name;
+
+  // Card header
+  document.getElementById('receipt-icon-main').textContent = p.emoji;
+  document.getElementById('receipt-icon-main').style.background = p.bg;
+  document.getElementById('receipt-icon-main').style.border = isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.08)';
+  document.getElementById('receipt-platform-name-main').textContent = p.name;
+  
+  // Type badge
+  const typeColors = { BUY:'#00C805', SELL:'#ff4d4d', DEPOSIT:'#4d8eff', WITHDRAWAL:'#ff9500', TRANSFER:'#9945FF' };
+  const badge = document.getElementById('receipt-type-badge');
+  badge.textContent = receipt.tradeType;
+  badge.style.background = hexToRgba(typeColors[receipt.tradeType] || '#4d8eff', 0.12);
+  badge.style.color = typeColors[receipt.tradeType] || '#4d8eff';
+
+  // Amount
+  const totalFmt = '$' + parseFloat(receipt.totalValue).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+  document.getElementById('receipt-total-value').textContent = totalFmt;
+  document.getElementById('receipt-total-value').style.color = isDark ? p.color : '#0d1117';
+  document.getElementById('receipt-asset-info').textContent = `${parseFloat(receipt.amount).toFixed(6)} ${receipt.asset} @ $${parseFloat(receipt.price).toLocaleString()}`;
+
+  // Status
+  document.getElementById('receipt-status-text').textContent = receipt.tradeType + ' Successful';
+
+  // Rows
+  document.getElementById('receipt-txid').textContent = receipt.txId;
+  
+  const d = new Date(receipt.date);
+  document.getElementById('receipt-date').textContent = d.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'}) + ' · ' + d.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+  
+  document.getElementById('receipt-asset').textContent = receipt.asset;
+  document.getElementById('receipt-amount').textContent = parseFloat(receipt.amount).toFixed(8) + ' ' + receipt.asset;
+  document.getElementById('receipt-price').textContent = '$' + parseFloat(receipt.price).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+  document.getElementById('receipt-fee').textContent = '$' + parseFloat(receipt.fee||0).toFixed(2);
+  document.getElementById('receipt-platform-row').textContent = p.name;
+
+  if (receipt.walletAddress) {
+    document.getElementById('wallet-row').style.display = 'flex';
+    document.getElementById('receipt-wallet').textContent = receipt.walletAddress;
+  }
+
+  // Footer
+  document.getElementById('receipt-footer-platform').textContent = p.name + ' Receipt';
+  document.getElementById('receipt-footer-date').textContent = new Date(receipt.createdAt).toLocaleDateString();
+  document.getElementById('receipt-expiry-footer').textContent = new Date(receipt.expiresAt).toLocaleDateString();
+
+  // Primary action button color
+  document.getElementById('receipt-action-primary').style.background = p.color === '#FFFFFF' ? '#000' : p.color;
+  document.getElementById('receipt-action-primary').style.color = '#fff';
+
+  document.getElementById('receipt-view').style.display = 'block';
+}
+
+// Contact trigger
+function triggerContact() {
+  const c = window._supportContact;
+  if (!c) return;
+  const { method, value } = c;
+  if (method === 'email') window.location.href = 'mailto:' + value;
+  else if (method === 'whatsapp') window.open('https://wa.me/' + value.replace(/\D/g,''), '_blank');
+  else if (method === 'telegram') window.open(value.startsWith('http') ? value : 'https://t.me/' + value.replace('@',''), '_blank');
+  else if (method === 'chatbot') alert('Chat support is active. Look for the chat widget on this page.');
+}
+
+// FAQ toggle
+function toggleFaq(i) {
+  const items = document.querySelectorAll('.faq-item');
+  items[i].classList.toggle('open');
+}
+
+function hexToRgba(hex, alpha) {
+  const r = parseInt(hex.slice(1,3),16);
+  const g = parseInt(hex.slice(3,5),16);
+  const b = parseInt(hex.slice(5,7),16);
+  if(isNaN(r)) return `rgba(77,142,255,${alpha})`;
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,1837 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Toolyvans — Fintech Solutions</title>
+<meta name="description" content="Toolyvans — Generate professional fintech tools instantly."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script src="https://js.paystack.co/v1/inline.js"></script>
+<style>
+/* ═══════════════════════════════════════════
+   DESIGN SYSTEM — TOOLYVANS DARK THEME
+═══════════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:#0b1326;
+  --bg-dim:#060e20;
+  --surface:#171f33;
+  --surface-high:#222a3d;
+  --surface-highest:#2d3449;
+  --surface-variant:#2d3449;
+  --border:#424754;
+  --border-subtle:#2d3449;
+  --primary:#adc6ff;
+  --primary-container:#4d8eff;
+  --on-primary:#002e6a;
+  --secondary:#4edea3;
+  --on-secondary:#003824;
+  --tertiary:#ffb95f;
+  --on-surface:#dae2fd;
+  --on-surface-muted:#c2c6d6;
+  --outline:#8c909f;
+  --error:#ffb4ab;
+  --radius:8px;
+  --radius-lg:12px;
+  --radius-xl:16px;
+  --shadow-primary:0 0 20px rgba(77,142,255,0.2);
+  --font-display:'Geist',sans-serif;
+  --font-body:'Inter',sans-serif;
+  --sidebar-w:272px;
+  --transition:0.2s cubic-bezier(.4,0,.2,1);
+}
+
+html,body{height:100%;background:var(--bg);color:var(--on-surface);font-family:var(--font-body);font-size:14px;line-height:1.6;overflow:hidden}
+
+/* ═══════════════════════════════════════════
+   LOADER
+═══════════════════════════════════════════ */
+#app-loader{
+  position:fixed;inset:0;background:var(--bg);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  z-index:9999;gap:24px;transition:opacity .5s,visibility .5s;
+}
+#app-loader.hidden{opacity:0;visibility:hidden;pointer-events:none}
+#app-loader .brand{font-family:var(--font-display);font-size:1.5rem;font-weight:700;color:var(--on-surface);letter-spacing:-0.02em}
+#app-loader .brand span{color:var(--primary-container)}
+
+.loader{display:flex;align-items:center;gap:0}
+.bar{display:inline-block;width:3px;height:20px;background-color:rgba(255,255,255,.5);border-radius:10px;animation:scale-up4 1s linear infinite}
+.bar:nth-child(2){height:35px;margin:0 5px;animation-delay:.25s}
+.bar:nth-child(3){animation-delay:.5s}
+@keyframes scale-up4{20%{background-color:#fff;transform:scaleY(1.5)}40%{transform:scaleY(1)}}
+
+/* ═══════════════════════════════════════════
+   LAYOUT
+═══════════════════════════════════════════ */
+#app{display:flex;height:100vh;overflow:hidden}
+.page{display:none;width:100%;height:100%}
+.page.active{display:flex}
+
+/* ═══════════════════════════════════════════
+   AUTH PAGES
+═══════════════════════════════════════════ */
+#auth-page{
+  align-items:center;justify-content:center;
+  background:var(--bg);
+  background-image:radial-gradient(ellipse at 20% 50%, rgba(77,142,255,0.08) 0%, transparent 50%),
+                   radial-gradient(ellipse at 80% 20%, rgba(78,222,163,0.06) 0%, transparent 50%);
+  position:relative;overflow:hidden;
+}
+#auth-page::before{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 40px,rgba(255,255,255,0.015) 40px,rgba(255,255,255,0.015) 41px),
+             repeating-linear-gradient(90deg,transparent,transparent 40px,rgba(255,255,255,0.015) 40px,rgba(255,255,255,0.015) 41px);
+  pointer-events:none;
+}
+
+.auth-card{
+  background:var(--surface);border:1px solid var(--border-subtle);
+  border-radius:var(--radius-xl);padding:40px;width:100%;max-width:420px;
+  position:relative;z-index:1;
+  box-shadow:0 24px 48px rgba(0,0,0,0.4);
+}
+.auth-logo{display:flex;align-items:center;gap:10px;margin-bottom:32px}
+.auth-logo-icon{
+  width:40px;height:40px;border-radius:10px;
+  background:linear-gradient(135deg,var(--primary-container),var(--on-primary));
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-display);font-weight:800;color:#fff;font-size:18px;
+}
+.auth-logo-text{font-family:var(--font-display);font-weight:700;font-size:1.1rem;color:var(--on-surface)}
+.auth-logo-sub{font-size:11px;color:var(--outline);font-weight:400}
+
+.auth-title{font-family:var(--font-display);font-size:1.5rem;font-weight:700;color:var(--on-surface);margin-bottom:6px}
+.auth-sub{color:var(--outline);font-size:13px;margin-bottom:28px}
+.auth-tabs{display:flex;background:var(--surface-high);border-radius:var(--radius);padding:4px;margin-bottom:28px}
+.auth-tab{
+  flex:1;padding:8px;border-radius:6px;border:none;
+  background:transparent;color:var(--outline);font-size:13px;font-weight:500;
+  cursor:pointer;transition:var(--transition);font-family:var(--font-body);
+}
+.auth-tab.active{background:var(--primary-container);color:#fff}
+
+.form-group{margin-bottom:16px}
+.form-label{display:block;font-size:12px;font-weight:500;color:var(--on-surface-muted);margin-bottom:6px;letter-spacing:0.02em;text-transform:uppercase}
+.form-input{
+  width:100%;background:var(--surface-high);border:1px solid var(--border-subtle);
+  border-radius:var(--radius);padding:11px 14px;color:var(--on-surface);
+  font-size:14px;font-family:var(--font-body);outline:none;
+  transition:border-color var(--transition);
+}
+.form-input:focus{border-color:var(--primary-container)}
+.form-input::placeholder{color:var(--outline)}
+.form-error{color:var(--error);font-size:12px;margin-top:4px}
+
+/* ═══════════════════════════════════════════
+   CUSTOM BUTTON (from uploaded design)
+═══════════════════════════════════════════ */
+.button{
+  cursor:pointer;font-size:1rem;border-radius:16px;border:none;
+  padding:2px;
+  background:radial-gradient(circle 80px at 80% -10%,#ffffff,#181b1b);
+  position:relative;width:100%;display:block;
+  font-family:var(--font-body);
+}
+.button::after{
+  content:"";position:absolute;width:65%;height:60%;border-radius:120px;
+  top:0;right:0;box-shadow:0 0 20px #ffffff38;z-index:-1;
+}
+.blob1{
+  position:absolute;width:70px;height:100%;border-radius:16px;bottom:0;left:0;
+  background:radial-gradient(circle 60px at 0% 100%,#3fe9ff,#0000ff80,transparent);
+  box-shadow:-10px 10px 30px #0051ff2d;
+}
+.inner{
+  padding:12px 25px;border-radius:14px;color:#fff;z-index:3;
+  position:relative;
+  background:radial-gradient(circle 80px at 80% -50%,#777777,#0f1111);
+  font-weight:600;font-size:14px;letter-spacing:0.01em;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.inner::before{
+  content:"";width:100%;height:100%;left:0;top:0;border-radius:14px;
+  background:radial-gradient(circle 60px at 0% 100%,#00e1ff1a,#0000ff11,transparent);
+  position:absolute;
+}
+.button:disabled .inner{opacity:0.5}
+.button:disabled{cursor:not-allowed}
+
+/* Compact button variant */
+.btn-compact{
+  cursor:pointer;font-size:0.8rem;border-radius:10px;border:none;padding:1.5px;
+  background:radial-gradient(circle 80px at 80% -10%,#ffffff,#181b1b);
+  position:relative;font-family:var(--font-body);display:inline-block;
+}
+.btn-compact::after{content:"";position:absolute;width:65%;height:60%;border-radius:80px;top:0;right:0;box-shadow:0 0 12px #ffffff38;z-index:-1}
+.btn-compact .blob1{width:40px;border-radius:10px}
+.btn-compact .inner{padding:8px 16px;border-radius:8px;font-size:12px;font-weight:600;gap:5px}
+
+/* Secondary outline button */
+.btn-outline{
+  background:transparent;border:1px solid var(--border);color:var(--on-surface);
+  border-radius:var(--radius);padding:10px 20px;cursor:pointer;font-size:13px;
+  font-family:var(--font-body);font-weight:500;transition:var(--transition);
+  display:flex;align-items:center;gap:6px;
+}
+.btn-outline:hover{background:var(--surface-high);border-color:var(--primary-container)}
+.btn-danger{border-color:var(--error);color:var(--error)}
+.btn-danger:hover{background:rgba(255,180,171,0.1)}
+
+/* ═══════════════════════════════════════════
+   DASHBOARD LAYOUT
+═══════════════════════════════════════════ */
+#dashboard-page{flex-direction:row}
+
+/* Sidebar */
+.sidebar{
+  width:var(--sidebar-w);min-width:var(--sidebar-w);
+  background:var(--bg-dim);border-right:1px solid var(--border-subtle);
+  display:flex;flex-direction:column;height:100vh;
+  transition:transform var(--transition);
+}
+.sidebar-header{padding:20px 20px 16px;border-bottom:1px solid var(--border-subtle)}
+.sidebar-brand{display:flex;align-items:center;gap:10px}
+.sidebar-logo{
+  width:36px;height:36px;border-radius:9px;
+  background:linear-gradient(135deg,var(--primary-container),var(--on-primary));
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-display);font-weight:800;color:#fff;font-size:16px;
+  flex-shrink:0;
+}
+.sidebar-brand-text .name{font-family:var(--font-display);font-weight:700;font-size:0.95rem;color:var(--on-surface)}
+.sidebar-brand-text .tagline{font-size:10px;color:var(--outline);font-weight:400}
+
+.sidebar-nav{flex:1;padding:16px 12px;display:flex;flex-direction:column;gap:2px;overflow-y:auto}
+.nav-item{
+  display:flex;align-items:center;gap:10px;padding:10px 12px;
+  border-radius:var(--radius);cursor:pointer;transition:var(--transition);
+  color:var(--outline);text-decoration:none;border:none;background:transparent;
+  font-family:var(--font-body);font-size:13px;font-weight:500;width:100%;text-align:left;
+  position:relative;
+}
+.nav-item:hover{background:var(--surface-high);color:var(--on-surface)}
+.nav-item.active{
+  background:linear-gradient(90deg,rgba(77,142,255,0.12),rgba(77,142,255,0.02));
+  color:var(--primary);border-left:3px solid var(--primary-container);
+  padding-left:9px;
+}
+.nav-item .material-symbols-outlined{font-size:18px;flex-shrink:0}
+.nav-item.active .material-symbols-outlined{font-variation-settings:'FILL' 1}
+.nav-badge{
+  margin-left:auto;background:var(--primary-container);color:var(--on-primary);
+  font-size:10px;font-weight:700;padding:2px 6px;border-radius:20px;
+}
+
+.sidebar-section-label{
+  font-size:10px;font-weight:600;color:var(--outline);letter-spacing:0.08em;
+  text-transform:uppercase;padding:12px 12px 6px;
+}
+
+.sidebar-footer{padding:16px 12px;border-top:1px solid var(--border-subtle)}
+.user-card{
+  display:flex;align-items:center;gap:10px;padding:10px 12px;
+  background:var(--surface);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);
+}
+.user-avatar{
+  width:32px;height:32px;border-radius:50%;background:var(--primary-container);
+  display:flex;align-items:center;justify-content:center;color:var(--on-primary);
+  font-weight:700;font-size:13px;flex-shrink:0;font-family:var(--font-display);
+}
+.user-info .u-name{font-size:12px;font-weight:600;color:var(--on-surface)}
+.user-info .u-balance{font-size:11px;color:var(--secondary);font-weight:500}
+.sidebar-logout{margin-top:8px;width:100%}
+
+/* ═══════════════════════════════════════════
+   MAIN CONTENT
+═══════════════════════════════════════════ */
+.main-content{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg)}
+
+.top-bar{
+  height:60px;border-bottom:1px solid var(--border-subtle);padding:0 28px;
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(11,19,38,0.8);backdrop-filter:blur(12px);
+  position:sticky;top:0;z-index:10;flex-shrink:0;
+}
+.top-bar-title{font-family:var(--font-display);font-size:1rem;font-weight:700;color:var(--on-surface)}
+.top-bar-actions{display:flex;align-items:center;gap:10px}
+.icon-btn{
+  width:36px;height:36px;border-radius:var(--radius);background:var(--surface);
+  border:1px solid var(--border-subtle);display:flex;align-items:center;justify-content:center;
+  cursor:pointer;color:var(--outline);transition:var(--transition);font-size:18px;
+}
+.icon-btn:hover{background:var(--surface-high);color:var(--on-surface)}
+.icon-btn .material-symbols-outlined{font-size:18px}
+.notif-dot{position:relative}
+.notif-dot::after{content:'';position:absolute;top:6px;right:6px;width:6px;height:6px;border-radius:50%;background:var(--primary-container);border:2px solid var(--bg)}
+
+.content-scroll{flex:1;overflow-y:auto;padding:24px 28px}
+.content-scroll::-webkit-scrollbar{width:4px}
+.content-scroll::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+
+/* ═══════════════════════════════════════════
+   DASHBOARD PANELS
+═══════════════════════════════════════════ */
+.panel{display:none}
+.panel.active{display:block}
+
+.page-header{margin-bottom:24px}
+.page-header h1{font-family:var(--font-display);font-size:1.6rem;font-weight:700;color:var(--on-surface);margin-bottom:4px}
+.page-header p{color:var(--outline);font-size:13px}
+
+/* Glass cards */
+.glass-card{
+  background:rgba(255,255,255,0.03);
+  backdrop-filter:blur(12px);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:var(--radius-xl);
+}
+.card{
+  background:var(--surface);border:1px solid var(--border-subtle);
+  border-radius:var(--radius-xl);
+}
+
+/* Grid system */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.grid-12{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+
+/* Stat cards */
+.stat-card{
+  padding:20px;background:var(--surface);border:1px solid var(--border-subtle);
+  border-radius:var(--radius-xl);position:relative;overflow:hidden;
+}
+.stat-card::before{
+  content:'';position:absolute;top:-40%;right:-20%;
+  width:120px;height:120px;border-radius:50%;opacity:0.06;
+}
+.stat-card.blue::before{background:var(--primary-container)}
+.stat-card.green::before{background:var(--secondary)}
+.stat-card.amber::before{background:var(--tertiary)}
+.stat-label{font-size:11px;font-weight:500;color:var(--outline);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px}
+.stat-value{font-family:var(--font-display);font-size:1.6rem;font-weight:700;color:var(--on-surface);margin-bottom:4px;line-height:1}
+.stat-change{font-size:12px;display:flex;align-items:center;gap:4px}
+.stat-change.up{color:var(--secondary)}
+.stat-change.down{color:var(--error)}
+.stat-icon{
+  width:40px;height:40px;border-radius:var(--radius-lg);
+  display:flex;align-items:center;justify-content:center;margin-bottom:12px;
+}
+.stat-icon.blue{background:rgba(77,142,255,0.15);color:var(--primary-container)}
+.stat-icon.green{background:rgba(78,222,163,0.15);color:var(--secondary)}
+.stat-icon.amber{background:rgba(255,185,95,0.15);color:var(--tertiary)}
+.stat-icon .material-symbols-outlined{font-size:20px}
+
+/* Balance card */
+.balance-card{
+  padding:28px;background:var(--surface);border:1px solid var(--border-subtle);
+  border-radius:var(--radius-xl);grid-column:1/-1;position:relative;overflow:hidden;
+}
+.balance-card::after{
+  content:'';position:absolute;top:-60px;right:-60px;width:200px;height:200px;
+  border-radius:50%;background:rgba(77,142,255,0.06);pointer-events:none;
+}
+.balance-label{font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--outline);margin-bottom:8px}
+.balance-amount{
+  font-family:var(--font-display);font-size:2.4rem;font-weight:800;
+  color:var(--on-surface);letter-spacing:-0.03em;margin-bottom:6px;
+}
+.balance-growth{display:flex;align-items:center;gap:6px;color:var(--secondary);font-size:13px;font-weight:500;margin-bottom:24px}
+.balance-actions{display:flex;gap:12px;flex-wrap:wrap}
+
+/* Quick action buttons */
+.quick-action{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:16px 12px;border-radius:var(--radius-lg);background:var(--surface-high);
+  border:1px solid var(--border-subtle);cursor:pointer;transition:var(--transition);
+  gap:8px;text-decoration:none;
+}
+.quick-action:hover{border-color:var(--primary-container);background:var(--surface-highest)}
+.quick-action .icon{
+  width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  background:rgba(77,142,255,0.12);color:var(--primary-container);font-size:18px;
+  transition:var(--transition);
+}
+.quick-action:hover .icon{background:var(--primary-container);color:var(--on-primary)}
+.quick-action .material-symbols-outlined{font-size:18px}
+.quick-action span:last-child{font-size:11px;font-weight:600;color:var(--on-surface)}
+
+/* Activity table */
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.section-title{font-family:var(--font-display);font-size:0.95rem;font-weight:700;color:var(--on-surface)}
+.section-link{font-size:12px;color:var(--primary-container);cursor:pointer;text-decoration:none;font-weight:500}
+.section-link:hover{text-decoration:underline}
+
+.activity-table{width:100%;border-collapse:collapse}
+.activity-table th{
+  padding:10px 16px;text-align:left;font-size:10px;font-weight:600;
+  color:var(--outline);text-transform:uppercase;letter-spacing:0.06em;
+  background:rgba(255,255,255,0.02);border-bottom:1px solid var(--border-subtle);
+}
+.activity-table th:last-child{text-align:right}
+.activity-table td{
+  padding:12px 16px;border-bottom:1px solid rgba(66,71,84,0.4);
+  font-size:13px;color:var(--on-surface);
+}
+.activity-table tr:last-child td{border-bottom:none}
+.activity-table tr:hover td{background:rgba(255,255,255,0.02)}
+.activity-table td:last-child{text-align:right}
+
+.tx-icon{
+  width:32px;height:32px;border-radius:var(--radius);background:var(--surface-high);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.tx-icon .material-symbols-outlined{font-size:16px}
+.tx-row{display:flex;align-items:center;gap:10px}
+.tx-name{font-size:13px;font-weight:500;color:var(--on-surface)}
+.tx-ref{font-size:11px;color:var(--outline)}
+
+.badge{
+  padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;
+  text-transform:uppercase;letter-spacing:0.04em;
+}
+.badge-billing{background:rgba(255,185,95,0.15);color:var(--tertiary)}
+.badge-deposit{background:rgba(78,222,163,0.1);color:var(--secondary);border:1px solid rgba(78,222,163,0.2)}
+.badge-service{background:rgba(173,198,255,0.1);color:var(--primary)}
+
+.amount-positive{color:var(--secondary);font-weight:700}
+.amount-negative{color:var(--on-surface);font-weight:700}
+
+/* ═══════════════════════════════════════════
+   TOOLS PANEL
+═══════════════════════════════════════════ */
+.tools-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin-bottom:28px}
+.tool-card{
+  background:var(--surface);border:1px solid var(--border-subtle);
+  border-radius:var(--radius-xl);padding:24px;
+  transition:var(--transition);cursor:pointer;position:relative;overflow:hidden;
+}
+.tool-card::before{
+  content:'';position:absolute;top:-40px;right:-40px;width:120px;height:120px;
+  border-radius:50%;opacity:0.06;transition:var(--transition);
+}
+.tool-card.blue::before{background:var(--primary-container)}
+.tool-card.green::before{background:var(--secondary)}
+.tool-card:hover{border-color:var(--primary-container);transform:translateY(-2px);box-shadow:var(--shadow-primary)}
+.tool-card:hover::before{opacity:0.1}
+
+.tool-icon{
+  width:48px;height:48px;border-radius:var(--radius-lg);
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:16px;font-size:24px;
+}
+.tool-icon.blue{background:rgba(77,142,255,0.15);color:var(--primary-container)}
+.tool-icon.green{background:rgba(78,222,163,0.15);color:var(--secondary)}
+.tool-icon .material-symbols-outlined{font-size:24px}
+.tool-name{font-family:var(--font-display);font-size:1rem;font-weight:700;color:var(--on-surface);margin-bottom:6px}
+.tool-desc{font-size:12px;color:var(--outline);line-height:1.6;margin-bottom:16px}
+.tool-price{
+  display:flex;align-items:center;gap:6px;
+  font-size:11px;color:var(--on-surface-muted);margin-bottom:16px;
+}
+.tool-price strong{color:var(--tertiary);font-weight:700;font-size:14px}
+.tool-tags{display:flex;gap:6px;flex-wrap:wrap}
+.tool-tag{
+  padding:3px 8px;background:var(--surface-high);border:1px solid var(--border-subtle);
+  border-radius:20px;font-size:10px;color:var(--outline);font-weight:500;
+}
+
+/* ═══════════════════════════════════════════
+   TOOL GENERATOR FORMS
+═══════════════════════════════════════════ */
+.tool-form-container{max-width:720px}
+.form-card{background:var(--surface);border:1px solid var(--border-subtle);border-radius:var(--radius-xl);overflow:hidden}
+.form-card-header{
+  padding:20px 24px;border-bottom:1px solid var(--border-subtle);
+  display:flex;align-items:center;gap:12px;
+}
+.form-card-header .back-btn{
+  width:30px;height:30px;border-radius:var(--radius);background:var(--surface-high);
+  border:1px solid var(--border-subtle);display:flex;align-items:center;justify-content:center;
+  cursor:pointer;color:var(--outline);transition:var(--transition);font-size:18px;
+  flex-shrink:0;
+}
+.form-card-header .back-btn:hover{color:var(--on-surface);background:var(--surface-highest)}
+.form-card-header .material-symbols-outlined{font-size:20px}
+.form-card-body{padding:24px}
+
+/* Custom select */
+.custom-select{
+  width:100%;background:var(--surface-high);border:1px solid var(--border-subtle);
+  border-radius:var(--radius);padding:11px 14px;color:var(--on-surface);
+  font-size:14px;font-family:var(--font-body);outline:none;
+  transition:border-color var(--transition);appearance:none;cursor:pointer;
+}
+.custom-select:focus{border-color:var(--primary-container)}
+.select-wrap{position:relative}
+.select-arrow{
+  position:absolute;right:12px;top:50%;transform:translateY(-50%);
+  color:var(--outline);pointer-events:none;font-size:18px;
+}
+.select-arrow .material-symbols-outlined{font-size:18px}
+
+/* Platform selector grid */
+.platform-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:4px}
+.platform-option{
+  border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:12px 8px;
+  text-align:center;cursor:pointer;transition:var(--transition);background:var(--surface-high);
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+}
+.platform-option:hover{border-color:var(--primary-container)}
+.platform-option.selected{border-color:var(--primary-container);background:rgba(77,142,255,0.08)}
+.platform-option .p-logo{font-size:20px;width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center}
+.platform-option .p-name{font-size:10px;font-weight:600;color:var(--on-surface-muted)}
+.platform-option.selected .p-name{color:var(--primary)}
+
+/* Contact method grid */
+.contact-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:4px}
+.contact-option{
+  border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:12px 8px;
+  text-align:center;cursor:pointer;transition:var(--transition);background:var(--surface-high);
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+}
+.contact-option:hover{border-color:var(--primary-container)}
+.contact-option.selected{border-color:var(--primary-container);background:rgba(77,142,255,0.08)}
+.contact-option .material-symbols-outlined{font-size:20px;color:var(--outline)}
+.contact-option.selected .material-symbols-outlined{color:var(--primary-container)}
+.contact-option span:last-child{font-size:10px;font-weight:600;color:var(--outline)}
+.contact-option.selected span:last-child{color:var(--primary)}
+
+/* Slider */
+.slider-container{margin-top:4px}
+.slider-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.slider-value{
+  background:var(--primary-container);color:var(--on-primary);
+  padding:2px 10px;border-radius:20px;font-size:12px;font-weight:700;
+}
+.range-input{width:100%;accent-color:var(--primary-container);height:4px;cursor:pointer}
+.slider-labels{display:flex;justify-content:space-between;margin-top:6px;font-size:10px;color:var(--outline)}
+
+/* Cost preview */
+.cost-preview{
+  background:var(--surface-high);border:1px solid var(--border-subtle);
+  border-radius:var(--radius-lg);padding:16px;margin:20px 0;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.cost-preview .cost-info{font-size:13px;color:var(--outline)}
+.cost-preview .cost-amount{font-family:var(--font-display);font-size:1.4rem;font-weight:700;color:var(--tertiary)}
+
+/* Generated items list */
+.generated-list{margin-top:28px}
+.gen-item{
+  background:var(--surface-high);border:1px solid var(--border-subtle);
+  border-radius:var(--radius-lg);padding:14px 16px;margin-bottom:8px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.gen-item-info .gen-name{font-size:13px;font-weight:600;color:var(--on-surface)}
+.gen-item-info .gen-meta{font-size:11px;color:var(--outline);margin-top:2px}
+.gen-item-actions{display:flex;gap:8px;align-items:center}
+.copy-btn{
+  padding:6px 12px;background:var(--surface);border:1px solid var(--border-subtle);
+  border-radius:var(--radius);font-size:11px;color:var(--on-surface-muted);
+  cursor:pointer;transition:var(--transition);display:flex;align-items:center;gap:4px;
+  font-family:var(--font-body);font-weight:500;
+}
+.copy-btn:hover{border-color:var(--primary-container);color:var(--primary)}
+.copy-btn .material-symbols-outlined{font-size:14px}
+.view-btn{
+  padding:6px 12px;background:rgba(77,142,255,0.1);border:1px solid var(--primary-container);
+  border-radius:var(--radius);font-size:11px;color:var(--primary-container);
+  cursor:pointer;transition:var(--transition);display:flex;align-items:center;gap:4px;
+  font-family:var(--font-body);font-weight:600;text-decoration:none;
+}
+.view-btn:hover{background:rgba(77,142,255,0.2)}
+.view-btn .material-symbols-outlined{font-size:14px}
+
+/* Expiry badge */
+.expiry-active{color:var(--secondary);font-size:11px}
+.expiry-expired{color:var(--error);font-size:11px}
+
+/* ═══════════════════════════════════════════
+   DEPOSIT PANEL
+═══════════════════════════════════════════ */
+.deposit-container{max-width:500px}
+.deposit-amounts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.deposit-chip{
+  padding:12px;text-align:center;border-radius:var(--radius-lg);
+  background:var(--surface-high);border:1px solid var(--border-subtle);
+  cursor:pointer;transition:var(--transition);font-weight:600;font-size:14px;
+  color:var(--on-surface);
+}
+.deposit-chip:hover{border-color:var(--primary-container)}
+.deposit-chip.selected{background:rgba(77,142,255,0.1);border-color:var(--primary-container);color:var(--primary)}
+
+/* ═══════════════════════════════════════════
+   WALLET PANEL
+═══════════════════════════════════════════ */
+.wallet-history{margin-top:16px}
+
+/* ═══════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════ */
+#toast{
+  position:fixed;bottom:24px;right:24px;
+  background:var(--surface-highest);border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:12px 18px;
+  font-size:13px;color:var(--on-surface);z-index:9999;
+  display:flex;align-items:center;gap:8px;
+  transform:translateY(80px);opacity:0;
+  transition:transform .3s,opacity .3s;max-width:320px;
+  box-shadow:0 8px 24px rgba(0,0,0,0.4);
+}
+#toast.show{transform:translateY(0);opacity:1}
+#toast.success .toast-icon{color:var(--secondary)}
+#toast.error .toast-icon{color:var(--error)}
+.toast-icon .material-symbols-outlined{font-size:18px}
+
+/* ═══════════════════════════════════════════
+   CHART BARS (balance trend)
+═══════════════════════════════════════════ */
+.chart-bars{display:flex;align-items:flex-end;gap:6px;height:120px;padding:0 4px}
+.chart-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px}
+.chart-bar{
+  width:100%;border-radius:4px 4px 0 0;background:rgba(77,142,255,0.2);
+  transition:background var(--transition);cursor:pointer;min-height:4px;
+  position:relative;
+}
+.chart-bar:hover{background:rgba(77,142,255,0.5)}
+.chart-bar.active{background:var(--primary-container);box-shadow:0 -4px 12px rgba(77,142,255,0.3)}
+.chart-day{font-size:9px;color:var(--outline);font-weight:600;text-transform:uppercase}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════ */
+@media(max-width:768px){
+  .sidebar{position:fixed;left:0;top:0;bottom:0;z-index:100;transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .tools-grid{grid-template-columns:1fr}
+  .platform-grid{grid-template-columns:repeat(2,1fr)}
+  .grid-2,.grid-3,.grid-12{grid-template-columns:1fr}
+  .content-scroll{padding:16px}
+}
+
+/* ═══════════════════════════════════════════
+   ANIMATIONS
+═══════════════════════════════════════════ */
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.panel.active{animation:fadeIn .25s ease forwards}
+.auth-card{animation:fadeIn .35s ease forwards}
+</style>
+</head>
+<body>
+
+<!-- APP LOADER -->
+<div id="app-loader">
+  <div class="brand">Toolyvans <span>Pro</span></div>
+  <div class="loader">
+    <div class="bar"></div>
+    <div class="bar"></div>
+    <div class="bar"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast">
+  <div class="toast-icon"><span class="material-symbols-outlined">check_circle</span></div>
+  <span id="toast-msg">Done!</span>
+</div>
+
+<!-- APP WRAPPER -->
+<div id="app">
+
+  <!-- ══════════════════════════════════════
+       AUTH PAGE
+  ══════════════════════════════════════ -->
+  <div id="auth-page" class="page">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <div class="auth-logo-icon">T</div>
+        <div>
+          <div class="auth-logo-text">Toolyvans</div>
+          <div class="auth-logo-sub">Fintech Solutions</div>
+        </div>
+      </div>
+
+      <div class="auth-tabs">
+        <button class="auth-tab active" onclick="switchAuthTab('login')">Sign In</button>
+        <button class="auth-tab" onclick="switchAuthTab('register')">Create Account</button>
+      </div>
+
+      <!-- Login Form -->
+      <div id="login-form">
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input type="email" class="form-input" id="login-email" placeholder="you@example.com"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" class="form-input" id="login-password" placeholder="••••••••"/>
+          <div class="form-error" id="login-error" style="display:none"></div>
+        </div>
+        <button class="button" onclick="handleLogin()" id="login-btn">
+          <div class="blob1"></div>
+          <div class="inner">
+            <span class="material-symbols-outlined" style="font-size:16px">login</span>
+            Sign In to Dashboard
+          </div>
+        </button>
+      </div>
+
+      <!-- Register Form -->
+      <div id="register-form" style="display:none">
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input type="text" class="form-input" id="reg-name" placeholder="Alex Johnson"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input type="email" class="form-input" id="reg-email" placeholder="you@example.com"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" class="form-input" id="reg-password" placeholder="••••••••"/>
+          <div class="form-error" id="reg-error" style="display:none"></div>
+        </div>
+        <button class="button" onclick="handleRegister()" id="reg-btn">
+          <div class="blob1"></div>
+          <div class="inner">
+            <span class="material-symbols-outlined" style="font-size:16px">person_add</span>
+            Create My Account
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       DASHBOARD PAGE
+  ══════════════════════════════════════ -->
+  <div id="dashboard-page" class="page">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-brand">
+          <div class="sidebar-logo">T</div>
+          <div class="sidebar-brand-text">
+            <div class="name">Toolyvans</div>
+            <div class="tagline">Fintech Solutions</div>
+          </div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="sidebar-section-label">Main</div>
+        <button class="nav-item active" onclick="showPanel('home')" data-panel="home">
+          <span class="material-symbols-outlined">dashboard</span>
+          Dashboard
+        </button>
+        <button class="nav-item" onclick="showPanel('wallet')" data-panel="wallet">
+          <span class="material-symbols-outlined">account_balance_wallet</span>
+          Wallet
+        </button>
+
+        <div class="sidebar-section-label">Tools</div>
+        <button class="nav-item" onclick="showPanel('tools')" data-panel="tools">
+          <span class="material-symbols-outlined">precision_manufacturing</span>
+          All Tools
+        </button>
+        <button class="nav-item" onclick="showPanel('support-site')" data-panel="support-site">
+          <span class="material-symbols-outlined">support_agent</span>
+          Support Sites
+        </button>
+        <button class="nav-item" onclick="showPanel('receipt-gen')" data-panel="receipt-gen">
+          <span class="material-symbols-outlined">receipt_long</span>
+          Receipt Gen
+        </button>
+
+        <div class="sidebar-section-label">Account</div>
+        <button class="nav-item" onclick="showPanel('deposit')" data-panel="deposit">
+          <span class="material-symbols-outlined">add_card</span>
+          Deposit Funds
+        </button>
+        <button class="nav-item" onclick="showPanel('activity')" data-panel="activity">
+          <span class="material-symbols-outlined">history</span>
+          Activity
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-card">
+          <div class="user-avatar" id="sidebar-avatar">A</div>
+          <div class="user-info">
+            <div class="u-name" id="sidebar-name">Loading…</div>
+            <div class="u-balance">$<span id="sidebar-balance">0.00</span></div>
+          </div>
+        </div>
+        <button class="btn-outline sidebar-logout" onclick="handleLogout()" style="margin-top:8px;width:100%;justify-content:center">
+          <span class="material-symbols-outlined" style="font-size:16px">logout</span>
+          Sign Out
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+      <div class="top-bar">
+        <div class="top-bar-title" id="top-bar-title">Dashboard</div>
+        <div class="top-bar-actions">
+          <div class="icon-btn notif-dot" title="Notifications">
+            <span class="material-symbols-outlined">notifications</span>
+          </div>
+          <div class="icon-btn" title="Profile" onclick="showPanel('wallet')">
+            <span class="material-symbols-outlined">account_circle</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-scroll">
+
+        <!-- ══════ HOME PANEL ══════ -->
+        <div class="panel active" id="panel-home">
+          <div class="page-header">
+            <h1>Good morning, <span id="welcome-name">Alex</span> 👋</h1>
+            <p>Monitor your tool usage and manage your account balance.</p>
+          </div>
+
+          <!-- Balance + Quick Actions -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+            <div class="balance-card" style="grid-column:unset">
+              <div class="balance-label">Available Balance</div>
+              <div class="balance-amount">$<span id="home-balance">0.00</span></div>
+              <div class="balance-growth">
+                <span class="material-symbols-outlined" style="font-size:16px">trending_up</span>
+                Live wallet balance
+              </div>
+              <div class="balance-actions">
+                <button class="btn-compact" onclick="showPanel('deposit')">
+                  <div class="blob1"></div>
+                  <div class="inner">
+                    <span class="material-symbols-outlined" style="font-size:14px">add_circle</span>
+                    Deposit Funds
+                  </div>
+                </button>
+                <button class="btn-outline" onclick="showPanel('wallet')">
+                  <span class="material-symbols-outlined" style="font-size:16px">history</span>
+                  History
+                </button>
+              </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card" style="padding:20px">
+              <div class="section-title" style="margin-bottom:14px">Quick Actions</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                <div class="quick-action" onclick="showPanel('support-site')">
+                  <div class="icon"><span class="material-symbols-outlined">support_agent</span></div>
+                  <span>Support Site</span>
+                </div>
+                <div class="quick-action" onclick="showPanel('receipt-gen')">
+                  <div class="icon"><span class="material-symbols-outlined">receipt_long</span></div>
+                  <span>Receipt Gen</span>
+                </div>
+                <div class="quick-action" onclick="showPanel('deposit')">
+                  <div class="icon"><span class="material-symbols-outlined">add_card</span></div>
+                  <span>Deposit</span>
+                </div>
+                <div class="quick-action" onclick="showPanel('activity')">
+                  <div class="icon"><span class="material-symbols-outlined">analytics</span></div>
+                  <span>Analytics</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stats row -->
+          <div class="grid-3" style="margin-bottom:16px">
+            <div class="stat-card blue">
+              <div class="stat-icon blue"><span class="material-symbols-outlined">support_agent</span></div>
+              <div class="stat-label">Support Sites</div>
+              <div class="stat-value" id="stat-sites">0</div>
+            </div>
+            <div class="stat-card green">
+              <div class="stat-icon green"><span class="material-symbols-outlined">receipt_long</span></div>
+              <div class="stat-label">Receipts Generated</div>
+              <div class="stat-value" id="stat-receipts">0</div>
+            </div>
+            <div class="stat-card amber">
+              <div class="stat-icon amber"><span class="material-symbols-outlined">payments</span></div>
+              <div class="stat-label">Total Spent</div>
+              <div class="stat-value" id="stat-spent">$0</div>
+            </div>
+          </div>
+
+          <!-- Recent Activity + Chart -->
+          <div style="display:grid;grid-template-columns:1fr 340px;gap:16px">
+            <div class="card" style="overflow:hidden">
+              <div style="padding:16px 16px 0">
+                <div class="section-header">
+                  <div class="section-title">Recent Activity</div>
+                  <a class="section-link" onclick="showPanel('activity')">View All</a>
+                </div>
+              </div>
+              <div style="overflow-x:auto">
+                <table class="activity-table" style="min-width:500px">
+                  <thead>
+                    <tr>
+                      <th>Transaction</th>
+                      <th>Type</th>
+                      <th>Date</th>
+                      <th>Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody id="home-tx-table">
+                    <tr><td colspan="4" style="text-align:center;color:var(--outline);padding:24px">No transactions yet</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Chart -->
+            <div class="card" style="padding:20px">
+              <div class="section-header">
+                <div class="section-title">Balance Trend</div>
+                <span style="font-size:10px;background:var(--surface-high);border:1px solid var(--border-subtle);padding:2px 8px;border-radius:4px;color:var(--outline);font-weight:600;text-transform:uppercase">7 Days</span>
+              </div>
+              <div class="chart-bars" id="chart-bars">
+                <!-- generated by JS -->
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:6px">
+                <span class="chart-day">MON</span><span class="chart-day">TUE</span><span class="chart-day">WED</span>
+                <span class="chart-day">THU</span><span class="chart-day">FRI</span><span class="chart-day">SAT</span>
+                <span class="chart-day" style="color:var(--primary)">SUN</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══════ WALLET PANEL ══════ -->
+        <div class="panel" id="panel-wallet">
+          <div class="page-header">
+            <h1>Wallet</h1>
+            <p>Your balance and transaction history.</p>
+          </div>
+          <div class="balance-card">
+            <div class="balance-label">Available Balance</div>
+            <div class="balance-amount">$<span id="wallet-balance">0.00</span></div>
+            <div class="balance-growth">
+              <span class="material-symbols-outlined" style="font-size:16px">account_balance_wallet</span>
+              Toolyvans Wallet
+            </div>
+            <div class="balance-actions">
+              <button class="btn-compact" onclick="showPanel('deposit')">
+                <div class="blob1"></div>
+                <div class="inner">
+                  <span class="material-symbols-outlined" style="font-size:14px">add_circle</span>
+                  Deposit Funds
+                </div>
+              </button>
+            </div>
+          </div>
+          <div class="wallet-history card" style="margin-top:16px;overflow:hidden">
+            <div style="padding:16px 16px 0"><div class="section-title">All Transactions</div></div>
+            <div style="overflow-x:auto">
+              <table class="activity-table" style="min-width:500px">
+                <thead>
+                  <tr><th>Transaction</th><th>Type</th><th>Date</th><th>Amount</th></tr>
+                </thead>
+                <tbody id="wallet-tx-table">
+                  <tr><td colspan="4" style="text-align:center;color:var(--outline);padding:24px">No transactions yet</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══════ TOOLS PANEL ══════ -->
+        <div class="panel" id="panel-tools">
+          <div class="page-header">
+            <h1>Tools Marketplace</h1>
+            <p>Professional fintech tools billed from your wallet balance.</p>
+          </div>
+          <div class="tools-grid">
+            <!-- Tool 1 -->
+            <div class="tool-card blue" onclick="showPanel('support-site')">
+              <div class="tool-icon blue"><span class="material-symbols-outlined">support_agent</span></div>
+              <div class="tool-name">Support Site Generator</div>
+              <div class="tool-desc">Generate professional branded support microsites for any trading platform in under 60 seconds. Custom themes, floating contact buttons, and shareable URLs.</div>
+              <div class="tool-price"><strong>$3</strong>/day — uptime billed on generation</div>
+              <div class="tool-tags">
+                <span class="tool-tag">Binance</span><span class="tool-tag">Bybit</span>
+                <span class="tool-tag">Coinbase</span><span class="tool-tag">MetaMask</span>
+                <span class="tool-tag">+6 more</span>
+              </div>
+            </div>
+            <!-- Tool 2 -->
+            <div class="tool-card green" onclick="showPanel('receipt-gen')">
+              <div class="tool-icon green"><span class="material-symbols-outlined">receipt_long</span></div>
+              <div class="tool-name">Transaction Receipt Generator</div>
+              <div class="tool-desc">Create fully-branded trading receipts for any platform. Customizable trade details, platform branding, and shareable receipt URLs that stay live for your chosen duration.</div>
+              <div class="tool-price"><strong>$2</strong>/day — uptime billed on generation</div>
+              <div class="tool-tags">
+                <span class="tool-tag">Buy/Sell</span><span class="tool-tag">Deposit</span>
+                <span class="tool-tag">Withdraw</span><span class="tool-tag">Transfer</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══════ SUPPORT SITE PANEL ══════ -->
+        <div class="panel" id="panel-support-site">
+          <div class="page-header">
+            <h1>Support Site Generator</h1>
+            <p>$3/day · Billed from wallet balance</p>
+          </div>
+          <div class="tool-form-container">
+            <div class="form-card">
+              <div class="form-card-header">
+                <div class="back-btn" onclick="showPanel('tools')">
+                  <span class="material-symbols-outlined">arrow_back</span>
+                </div>
+                <div>
+                  <div style="font-weight:700;font-size:14px;color:var(--on-surface)">Create New Support Site</div>
+                  <div style="font-size:11px;color:var(--outline)">Configure your branded microsite</div>
+                </div>
+              </div>
+              <div class="form-card-body">
+                <div class="form-group">
+                  <label class="form-label">Select Platform</label>
+                  <div class="platform-grid" id="ss-platform-grid"></div>
+                  <input type="hidden" id="ss-platform"/>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Contact Method</label>
+                  <div class="contact-grid">
+                    <div class="contact-option" data-method="email" onclick="selectContact('ss','email')">
+                      <span class="material-symbols-outlined">mail</span><span>Email</span>
+                    </div>
+                    <div class="contact-option" data-method="whatsapp" onclick="selectContact('ss','whatsapp')">
+                      <span class="material-symbols-outlined">chat</span><span>WhatsApp</span>
+                    </div>
+                    <div class="contact-option" data-method="telegram" onclick="selectContact('ss','telegram')">
+                      <span class="material-symbols-outlined">send</span><span>Telegram</span>
+                    </div>
+                    <div class="contact-option" data-method="chatbot" onclick="selectContact('ss','chatbot')">
+                      <span class="material-symbols-outlined">smart_toy</span><span>Chatbot</span>
+                    </div>
+                  </div>
+                  <input type="hidden" id="ss-contact-method"/>
+                </div>
+
+                <div class="form-group" id="ss-contact-detail-group" style="display:none">
+                  <label class="form-label" id="ss-contact-label">Contact Value</label>
+                  <input type="text" class="form-input" id="ss-contact-value" placeholder="Enter contact details"/>
+                </div>
+                <div class="form-group" id="ss-chatbot-group" style="display:none">
+                  <label class="form-label">Chatbot Embed Code</label>
+                  <textarea class="form-input" id="ss-chatbot-code" rows="4" placeholder="Paste your chat widget script here..."></textarea>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Uptime Duration</label>
+                  <div class="slider-container">
+                    <div class="slider-header">
+                      <span style="font-size:12px;color:var(--outline)">1 – 30 days</span>
+                      <div class="slider-value"><span id="ss-days-display">7</span> days</div>
+                    </div>
+                    <input type="range" class="range-input" min="1" max="30" value="7" id="ss-days-slider"
+                           oninput="updateDays('ss',this.value)"/>
+                    <div class="slider-labels"><span>1 day</span><span>15 days</span><span>30 days</span></div>
+                  </div>
+                </div>
+
+                <div class="cost-preview">
+                  <div class="cost-info">
+                    <div style="font-weight:600;color:var(--on-surface);margin-bottom:2px">Total Cost</div>
+                    <div id="ss-cost-breakdown">7 days × $3/day</div>
+                  </div>
+                  <div class="cost-amount">$<span id="ss-total-cost">21.00</span></div>
+                </div>
+
+                <button class="button" onclick="generateSupportSite()" id="ss-generate-btn">
+                  <div class="blob1"></div>
+                  <div class="inner">
+                    <span class="material-symbols-outlined" style="font-size:16px">auto_awesome</span>
+                    Generate Support Site
+                  </div>
+                </button>
+              </div>
+            </div>
+
+            <!-- Generated Sites List -->
+            <div class="generated-list">
+              <div class="section-header">
+                <div class="section-title">My Support Sites</div>
+              </div>
+              <div id="ss-list">
+                <div style="text-align:center;color:var(--outline);padding:20px;background:var(--surface);border-radius:var(--radius-lg)">No support sites yet</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══════ RECEIPT GEN PANEL ══════ -->
+        <div class="panel" id="panel-receipt-gen">
+          <div class="page-header">
+            <h1>Receipt Generator</h1>
+            <p>$2/day · Billed from wallet balance</p>
+          </div>
+          <div class="tool-form-container">
+            <div class="form-card">
+              <div class="form-card-header">
+                <div class="back-btn" onclick="showPanel('tools')">
+                  <span class="material-symbols-outlined">arrow_back</span>
+                </div>
+                <div>
+                  <div style="font-weight:700;font-size:14px;color:var(--on-surface)">Create Transaction Receipt</div>
+                  <div style="font-size:11px;color:var(--outline)">Generate a branded trading receipt</div>
+                </div>
+              </div>
+              <div class="form-card-body">
+                <div class="form-group">
+                  <label class="form-label">Select Platform</label>
+                  <div class="platform-grid" id="rg-platform-grid"></div>
+                  <input type="hidden" id="rg-platform"/>
+                </div>
+
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                  <div class="form-group">
+                    <label class="form-label">Trade Type</label>
+                    <div class="select-wrap">
+                      <select class="custom-select" id="rg-trade-type">
+                        <option value="BUY">Buy</option>
+                        <option value="SELL">Sell</option>
+                        <option value="DEPOSIT">Deposit</option>
+                        <option value="WITHDRAWAL">Withdrawal</option>
+                        <option value="TRANSFER">Transfer</option>
+                      </select>
+                      <div class="select-arrow"><span class="material-symbols-outlined">expand_more</span></div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Asset / Coin</label>
+                    <input type="text" class="form-input" id="rg-asset" placeholder="BTC, ETH, USDT…"/>
+                  </div>
+                </div>
+
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+                  <div class="form-group">
+                    <label class="form-label">Amount</label>
+                    <input type="number" class="form-input" id="rg-amount" placeholder="0.0000"/>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Price (USD)</label>
+                    <input type="number" class="form-input" id="rg-price" placeholder="43500"/>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Fee (USD)</label>
+                    <input type="number" class="form-input" id="rg-fee" placeholder="0.00"/>
+                  </div>
+                </div>
+
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                  <div class="form-group">
+                    <label class="form-label">Trade Date</label>
+                    <input type="datetime-local" class="form-input" id="rg-date"/>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Transaction ID</label>
+                    <input type="text" class="form-input" id="rg-txid" placeholder="0x1a2b3c…"/>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Wallet / Account Address (optional)</label>
+                  <input type="text" class="form-input" id="rg-wallet" placeholder="0x… or leave blank"/>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Display Duration</label>
+                  <div class="slider-container">
+                    <div class="slider-header">
+                      <span style="font-size:12px;color:var(--outline)">1 – 30 days</span>
+                      <div class="slider-value"><span id="rg-days-display">7</span> days</div>
+                    </div>
+                    <input type="range" class="range-input" min="1" max="30" value="7" id="rg-days-slider"
+                           oninput="updateDays('rg',this.value)"/>
+                    <div class="slider-labels"><span>1 day</span><span>15 days</span><span>30 days</span></div>
+                  </div>
+                </div>
+
+                <div class="cost-preview">
+                  <div class="cost-info">
+                    <div style="font-weight:600;color:var(--on-surface);margin-bottom:2px">Total Cost</div>
+                    <div id="rg-cost-breakdown">7 days × $2/day</div>
+                  </div>
+                  <div class="cost-amount">$<span id="rg-total-cost">14.00</span></div>
+                </div>
+
+                <button class="button" onclick="generateReceipt()" id="rg-generate-btn">
+                  <div class="blob1"></div>
+                  <div class="inner">
+                    <span class="material-symbols-outlined" style="font-size:16px">receipt_long</span>
+                    Generate Receipt
+                  </div>
+                </button>
+              </div>
+            </div>
+
+            <!-- Generated Receipts List -->
+            <div class="generated-list">
+              <div class="section-header">
+                <div class="section-title">My Generated Receipts</div>
+              </div>
+              <div id="rg-list">
+                <div style="text-align:center;color:var(--outline);padding:20px;background:var(--surface);border-radius:var(--radius-lg)">No receipts yet</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══════ DEPOSIT PANEL ══════ -->
+        <div class="panel" id="panel-deposit">
+          <div class="page-header">
+            <h1>Deposit Funds</h1>
+            <p>Add balance to your Toolyvans wallet via Paystack.</p>
+          </div>
+          <div class="deposit-container">
+            <div class="card" style="padding:24px">
+              <div class="form-group">
+                <label class="form-label">Select Amount</label>
+                <div class="deposit-amounts">
+                  <div class="deposit-chip" onclick="selectDeposit(10)">$10</div>
+                  <div class="deposit-chip" onclick="selectDeposit(25)">$25</div>
+                  <div class="deposit-chip" onclick="selectDeposit(50)">$50</div>
+                  <div class="deposit-chip" onclick="selectDeposit(100)">$100</div>
+                  <div class="deposit-chip" onclick="selectDeposit(250)">$250</div>
+                  <div class="deposit-chip" onclick="selectDeposit(500)">$500</div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Or Enter Custom Amount (USD)</label>
+                <input type="number" class="form-input" id="deposit-amount" placeholder="Minimum $5" min="5"/>
+              </div>
+              <div style="background:var(--surface-high);border-radius:var(--radius-lg);padding:14px;margin-bottom:20px;font-size:12px;color:var(--outline)">
+                <span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle;margin-right:6px">info</span>
+                Payments are processed securely via Paystack. Your wallet balance updates immediately upon successful payment.
+              </div>
+              <button class="button" onclick="initiatePayment()" id="deposit-btn">
+                <div class="blob1"></div>
+                <div class="inner">
+                  <span class="material-symbols-outlined" style="font-size:16px">payments</span>
+                  Pay with Paystack
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══════ ACTIVITY PANEL ══════ -->
+        <div class="panel" id="panel-activity">
+          <div class="page-header">
+            <h1>Activity Log</h1>
+            <p>Complete history of all your transactions and tool usage.</p>
+          </div>
+          <div class="card" style="overflow:hidden">
+            <div style="padding:16px 16px 0"><div class="section-title">All Transactions</div></div>
+            <div style="overflow-x:auto">
+              <table class="activity-table" style="min-width:500px">
+                <thead>
+                  <tr><th>Transaction</th><th>Type</th><th>Date</th><th>Amount</th></tr>
+                </thead>
+                <tbody id="activity-table">
+                  <tr><td colspan="4" style="text-align:center;color:var(--outline);padding:24px">No transactions yet</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /content-scroll -->
+    </div><!-- /main-content -->
+  </div><!-- /dashboard-page -->
+</div><!-- /app -->
+
+<script>
+// ═══════════════════════════════════════════
+// CONFIGURATION
+// ═══════════════════════════════════════════
+const API = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? 'http://localhost:3000'
+  : '';
+
+const PAYSTACK_KEY = 'pk_live_69fcc7c11f24d782bb103fddf833dee1daa85e9d';
+
+// Platform data
+const PLATFORMS = [
+  { key:'binance', name:'Binance', color:'#F3BA2F', bg:'#181A20', text:'#F3BA2F', emoji:'🟡' },
+  { key:'bybit', name:'Bybit', color:'#F7A600', bg:'#1C1C1E', text:'#F7A600', emoji:'🟠' },
+  { key:'coinbase', name:'Coinbase', color:'#0052FF', bg:'#FFFFFF', text:'#0052FF', emoji:'🔵' },
+  { key:'metamask', name:'MetaMask', color:'#E8821A', bg:'#FFFFFF', text:'#E8821A', emoji:'🦊' },
+  { key:'trustwallet', name:'Trust', color:'#3375BB', bg:'#FFFFFF', text:'#3375BB', emoji:'🔷' },
+  { key:'robinhood', name:'Robinhood', color:'#00C805', bg:'#FFFFFF', text:'#00C805', emoji:'🟢' },
+  { key:'phantom', name:'Phantom', color:'#9945FF', bg:'#FFFFFF', text:'#9945FF', emoji:'👻' },
+  { key:'kraken', name:'Kraken', color:'#5741D9', bg:'#FFFFFF', text:'#5741D9', emoji:'🐙' },
+  { key:'kucoin', name:'KuCoin', color:'#23AF91', bg:'#FFFFFF', text:'#23AF91', emoji:'🐢' },
+  { key:'okx', name:'OKX', color:'#FFFFFF', bg:'#000000', text:'#FFFFFF', emoji:'⚫' }
+];
+
+// State
+let currentUser = null;
+let authToken = localStorage.getItem('tv_token');
+let selectedDeposit = 0;
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+async function init() {
+  buildPlatformGrids();
+  
+  // Auto-login if token exists
+  if (authToken) {
+    try {
+      const user = await apiCall('GET', '/api/auth/me');
+      currentUser = user;
+      showDashboard();
+      await loadDashboard();
+    } catch (e) {
+      localStorage.removeItem('tv_token');
+      authToken = null;
+      showAuth();
+    }
+  } else {
+    showAuth();
+  }
+
+  // Check for payment callback
+  const urlParams = new URLSearchParams(window.location.search);
+  const ref = urlParams.get('reference') || urlParams.get('trxref');
+  if (ref && authToken) {
+    await verifyPayment(ref);
+    window.history.replaceState({}, '', '/');
+  }
+
+  // Hide loader
+  setTimeout(() => {
+    document.getElementById('app-loader').classList.add('hidden');
+  }, 800);
+}
+
+// ═══════════════════════════════════════════
+// API HELPER
+// ═══════════════════════════════════════════
+async function apiCall(method, path, body) {
+  const opts = {
+    method,
+    headers: { 'Content-Type': 'application/json' }
+  };
+  if (authToken) opts.headers['Authorization'] = 'Bearer ' + authToken;
+  if (body) opts.body = JSON.stringify(body);
+  
+  const res = await fetch(API + path, opts);
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Request failed');
+  return data;
+}
+
+// ═══════════════════════════════════════════
+// AUTH
+// ═══════════════════════════════════════════
+function showAuth() {
+  document.getElementById('auth-page').classList.add('active');
+  document.getElementById('dashboard-page').classList.remove('active');
+}
+function showDashboard() {
+  document.getElementById('auth-page').classList.remove('active');
+  document.getElementById('dashboard-page').classList.add('active');
+}
+
+function switchAuthTab(tab) {
+  document.querySelectorAll('.auth-tab').forEach((t,i) => {
+    t.classList.toggle('active', (tab==='login'&&i===0)||(tab==='register'&&i===1));
+  });
+  document.getElementById('login-form').style.display = tab==='login'?'block':'none';
+  document.getElementById('register-form').style.display = tab==='register'?'block':'none';
+}
+
+async function handleLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  const errEl = document.getElementById('login-error');
+  errEl.style.display='none';
+
+  if (!email || !password) { errEl.textContent='Please fill all fields'; errEl.style.display='block'; return; }
+  
+  setLoading('login-btn', true);
+  try {
+    const data = await apiCall('POST', '/api/auth/login', { email, password });
+    authToken = data.token;
+    currentUser = data.user;
+    localStorage.setItem('tv_token', authToken);
+    showDashboard();
+    showPanel('home');
+    await loadDashboard();
+    toast('Welcome back, ' + currentUser.name + '! 👋', 'success');
+  } catch (e) {
+    errEl.textContent = e.message;
+    errEl.style.display = 'block';
+  }
+  setLoading('login-btn', false);
+}
+
+async function handleRegister() {
+  const name = document.getElementById('reg-name').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const password = document.getElementById('reg-password').value;
+  const errEl = document.getElementById('reg-error');
+  errEl.style.display='none';
+
+  if (!name || !email || !password) { errEl.textContent='Please fill all fields'; errEl.style.display='block'; return; }
+  if (password.length < 6) { errEl.textContent='Password must be at least 6 characters'; errEl.style.display='block'; return; }
+  
+  setLoading('reg-btn', true);
+  try {
+    const data = await apiCall('POST', '/api/auth/register', { name, email, password });
+    authToken = data.token;
+    currentUser = data.user;
+    localStorage.setItem('tv_token', authToken);
+    showDashboard();
+    showPanel('home');
+    await loadDashboard();
+    toast('Account created! Welcome to Toolyvans 🎉', 'success');
+  } catch (e) {
+    errEl.textContent = e.message;
+    errEl.style.display = 'block';
+  }
+  setLoading('reg-btn', false);
+}
+
+function handleLogout() {
+  authToken = null;
+  currentUser = null;
+  localStorage.removeItem('tv_token');
+  showAuth();
+  toast('Signed out successfully', 'success');
+}
+
+// ═══════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════
+const panelTitles = {
+  home:'Dashboard', wallet:'Wallet', tools:'Tools Marketplace',
+  'support-site':'Support Site Generator', 'receipt-gen':'Receipt Generator',
+  deposit:'Deposit Funds', activity:'Activity Log'
+};
+
+function showPanel(name) {
+  // Update nav
+  document.querySelectorAll('.nav-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.panel === name);
+  });
+  // Update panels
+  document.querySelectorAll('.panel').forEach(el => {
+    el.classList.toggle('active', el.id === 'panel-' + name);
+  });
+  // Update title
+  document.getElementById('top-bar-title').textContent = panelTitles[name] || 'Dashboard';
+
+  // Load data when showing specific panels
+  if (name === 'support-site') loadSupportSiteList();
+  if (name === 'receipt-gen') loadReceiptList();
+  if (name === 'wallet' || name === 'activity') loadAllTransactions();
+}
+
+// ═══════════════════════════════════════════
+// DASHBOARD DATA
+// ═══════════════════════════════════════════
+async function loadDashboard() {
+  if (!currentUser) return;
+  try {
+    const data = await apiCall('GET', '/api/dashboard');
+    
+    // Update user displays
+    updateUserUI(data.balance);
+    
+    // Stats
+    document.getElementById('stat-sites').textContent = data.stats.sites;
+    document.getElementById('stat-receipts').textContent = data.stats.receipts;
+    
+    const spent = data.transactions
+      .filter(t => t.amount < 0)
+      .reduce((sum, t) => sum + Math.abs(t.amount), 0);
+    document.getElementById('stat-spent').textContent = '$' + spent.toFixed(0);
+
+    // Table
+    renderTxTable('home-tx-table', data.transactions.slice(0, 5));
+    renderChart(data.balance);
+  } catch (e) {
+    console.error('Dashboard load error:', e);
+  }
+}
+
+function updateUserUI(balance) {
+  const bal = parseFloat(balance || 0).toFixed(2);
+  document.getElementById('sidebar-name').textContent = currentUser.name;
+  document.getElementById('sidebar-avatar').textContent = currentUser.name.charAt(0).toUpperCase();
+  document.getElementById('sidebar-balance').textContent = bal;
+  document.getElementById('home-balance').textContent = bal;
+  document.getElementById('wallet-balance').textContent = bal;
+  document.getElementById('welcome-name').textContent = currentUser.name.split(' ')[0];
+}
+
+async function loadAllTransactions() {
+  try {
+    const data = await apiCall('GET', '/api/dashboard');
+    updateUserUI(data.balance);
+    renderTxTable('wallet-tx-table', data.transactions);
+    renderTxTable('activity-table', data.transactions);
+  } catch(e) {}
+}
+
+function renderTxTable(tableId, txs) {
+  const tbody = document.getElementById(tableId);
+  if (!txs || txs.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--outline);padding:24px">No transactions yet</td></tr>';
+    return;
+  }
+  tbody.innerHTML = txs.map(t => {
+    const isPos = t.amount > 0;
+    const icon = t.icon || (isPos ? 'add_task' : 'remove_circle');
+    const badgeCls = t.type === 'deposit' ? 'deposit' : (t.type === 'billing' ? 'billing' : 'service');
+    const date = new Date(t.createdAt).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+    return `<tr>
+      <td><div class="tx-row">
+        <div class="tx-icon"><span class="material-symbols-outlined" style="color:${isPos?'var(--secondary)':'var(--primary)'}">${icon}</span></div>
+        <div><div class="tx-name">${t.description}</div><div class="tx-ref">${t.reference||''}</div></div>
+      </div></td>
+      <td><span class="badge badge-${badgeCls}">${t.type}</span></td>
+      <td style="color:var(--outline);font-size:12px">${date}</td>
+      <td class="${isPos?'amount-positive':'amount-negative'}">${isPos?'+':''}\$${Math.abs(t.amount).toFixed(2)}</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderChart(balance) {
+  const container = document.getElementById('chart-bars');
+  const days = 7;
+  // Simulate 7-day trend based on current balance
+  const heights = [40,60,52,85,70,95,100].map(h => h * balance / 100);
+  const maxH = Math.max(...heights);
+  
+  container.innerHTML = heights.map((h, i) => {
+    const pct = maxH > 0 ? (h / maxH * 100) : 10;
+    const val = (balance * pct / 100).toFixed(0);
+    return `<div class="chart-bar-wrap">
+      <div class="chart-bar ${i===6?'active':''}" style="height:${pct}%" title="\$${val}"></div>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════
+// PLATFORM GRIDS
+// ═══════════════════════════════════════════
+function buildPlatformGrids() {
+  ['ss', 'rg'].forEach(prefix => {
+    const grid = document.getElementById(prefix + '-platform-grid');
+    grid.innerHTML = PLATFORMS.map(p => `
+      <div class="platform-option" data-platform="${p.key}" onclick="selectPlatform('${prefix}','${p.key}')">
+        <div class="p-logo" style="background:${p.bg};border:1px solid rgba(255,255,255,0.1)">${p.emoji}</div>
+        <div class="p-name">${p.name}</div>
+      </div>`).join('');
+  });
+}
+
+function selectPlatform(prefix, key) {
+  document.querySelectorAll(`#${prefix}-platform-grid .platform-option`).forEach(el => {
+    el.classList.toggle('selected', el.dataset.platform === key);
+  });
+  document.getElementById(prefix + '-platform').value = key;
+}
+
+function selectContact(prefix, method) {
+  document.querySelectorAll(`#panel-support-site .contact-option`).forEach(el => {
+    el.classList.toggle('selected', el.dataset.method === method);
+  });
+  document.getElementById(prefix + '-contact-method').value = method;
+  
+  const detailGroup = document.getElementById(prefix + '-contact-detail-group');
+  const chatbotGroup = document.getElementById(prefix + '-chatbot-group');
+  const label = document.getElementById(prefix + '-contact-label');
+  const input = document.getElementById(prefix + '-contact-value');
+  
+  detailGroup.style.display = method !== 'chatbot' ? 'block' : 'none';
+  chatbotGroup.style.display = method === 'chatbot' ? 'block' : 'none';
+  
+  const labels = { email:'Email Address', whatsapp:'WhatsApp Number (with country code)', telegram:'Telegram Username or Link' };
+  const placeholders = { email:'support@example.com', whatsapp:'+2348012345678', telegram:'@username or t.me/yourgroup' };
+  if (label) label.textContent = labels[method] || '';
+  if (input) input.placeholder = placeholders[method] || '';
+}
+
+function updateDays(prefix, val) {
+  const price = prefix === 'ss' ? 3 : 2;
+  document.getElementById(prefix + '-days-display').textContent = val;
+  document.getElementById(prefix + '-total-cost').textContent = (val * price).toFixed(2);
+  document.getElementById(prefix + '-cost-breakdown').textContent = `${val} days × \$${price}/day`;
+}
+
+// ═══════════════════════════════════════════
+// TOOL 1: SUPPORT SITE GENERATOR
+// ═══════════════════════════════════════════
+async function generateSupportSite() {
+  const platform = document.getElementById('ss-platform').value;
+  const contactMethod = document.getElementById('ss-contact-method').value;
+  const contactValue = document.getElementById('ss-contact-value').value.trim();
+  const chatbotCode = document.getElementById('ss-chatbot-code')?.value.trim() || '';
+  const days = parseInt(document.getElementById('ss-days-slider').value);
+
+  if (!platform) { toast('Please select a platform', 'error'); return; }
+  if (!contactMethod) { toast('Please select a contact method', 'error'); return; }
+  if (contactMethod !== 'chatbot' && !contactValue) { toast('Please enter contact details', 'error'); return; }
+  if (contactMethod === 'chatbot' && !chatbotCode) { toast('Please paste your chatbot embed code', 'error'); return; }
+
+  setLoading('ss-generate-btn', true);
+  try {
+    const res = await apiCall('POST', '/api/tools/support-site/generate', {
+      platform, contactMethod, contactValue, chatbotCode, days
+    });
+    currentUser.balance = res.newBalance;
+    updateUserUI(res.newBalance);
+    toast(`Support site generated! Cost: $${res.cost}`, 'success');
+    loadSupportSiteList();
+  } catch (e) {
+    toast(e.message, 'error');
+  }
+  setLoading('ss-generate-btn', false);
+}
+
+async function loadSupportSiteList() {
+  try {
+    const data = await apiCall('GET', '/api/tools/support-site/list');
+    const container = document.getElementById('ss-list');
+    if (!data.sites.length) {
+      container.innerHTML = '<div style="text-align:center;color:var(--outline);padding:20px;background:var(--surface);border-radius:var(--radius-lg)">No support sites yet</div>';
+      return;
+    }
+    const host = window.location.origin;
+    container.innerHTML = data.sites.map(s => {
+      const p = PLATFORMS.find(pl => pl.key === s.platform) || {};
+      const expired = new Date() > new Date(s.expiresAt);
+      const expStr = expired ? '<span class="expiry-expired">Expired</span>' :
+        '<span class="expiry-active">Active until ' + new Date(s.expiresAt).toLocaleDateString() + '</span>';
+      const url = host + '/view/' + s.slug;
+      return `<div class="gen-item">
+        <div class="gen-item-info">
+          <div class="gen-name">${p.emoji||''} ${p.name||s.platform} Support Site</div>
+          <div class="gen-meta">${expStr} · ${s.contactMethod} · ${s.days} days · $${s.totalCost}</div>
+        </div>
+        <div class="gen-item-actions">
+          <button class="copy-btn" onclick="copyToClipboard('${url}')">
+            <span class="material-symbols-outlined">content_copy</span> Copy Link
+          </button>
+          <a class="view-btn" href="/view/${s.slug}" target="_blank">
+            <span class="material-symbols-outlined">open_in_new</span> View
+          </a>
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) {}
+}
+
+// ═══════════════════════════════════════════
+// TOOL 2: RECEIPT GENERATOR
+// ═══════════════════════════════════════════
+async function generateReceipt() {
+  const platform = document.getElementById('rg-platform').value;
+  const tradeType = document.getElementById('rg-trade-type').value;
+  const asset = document.getElementById('rg-asset').value.trim();
+  const amount = document.getElementById('rg-amount').value;
+  const price = document.getElementById('rg-price').value;
+  const fee = document.getElementById('rg-fee').value || '0';
+  const date = document.getElementById('rg-date').value;
+  const txId = document.getElementById('rg-txid').value.trim();
+  const walletAddress = document.getElementById('rg-wallet').value.trim();
+  const days = parseInt(document.getElementById('rg-days-slider').value);
+  const totalValue = (parseFloat(amount) * parseFloat(price)).toFixed(2);
+
+  if (!platform) { toast('Please select a platform', 'error'); return; }
+  if (!asset) { toast('Please enter an asset name', 'error'); return; }
+  if (!amount || !price) { toast('Please enter amount and price', 'error'); return; }
+  if (!date) { toast('Please select a trade date', 'error'); return; }
+  if (!txId) { toast('Please enter a transaction ID', 'error'); return; }
+
+  setLoading('rg-generate-btn', true);
+  try {
+    const res = await apiCall('POST', '/api/tools/receipt/generate', {
+      platform, tradeType, asset, amount, price, totalValue, date, txId, walletAddress, fee, days
+    });
+    currentUser.balance = res.newBalance;
+    updateUserUI(res.newBalance);
+    toast(`Receipt generated! Cost: $${res.cost}`, 'success');
+    loadReceiptList();
+  } catch (e) {
+    toast(e.message, 'error');
+  }
+  setLoading('rg-generate-btn', false);
+}
+
+async function loadReceiptList() {
+  try {
+    const data = await apiCall('GET', '/api/tools/receipt/list');
+    const container = document.getElementById('rg-list');
+    if (!data.receipts.length) {
+      container.innerHTML = '<div style="text-align:center;color:var(--outline);padding:20px;background:var(--surface);border-radius:var(--radius-lg)">No receipts yet</div>';
+      return;
+    }
+    const host = window.location.origin;
+    container.innerHTML = data.receipts.map(r => {
+      const p = PLATFORMS.find(pl => pl.key === r.platform) || {};
+      const expired = new Date() > new Date(r.expiresAt);
+      const expStr = expired ? '<span class="expiry-expired">Expired</span>' :
+        '<span class="expiry-active">Active until ' + new Date(r.expiresAt).toLocaleDateString() + '</span>';
+      const url = host + '/view/' + r.slug;
+      return `<div class="gen-item">
+        <div class="gen-item-info">
+          <div class="gen-name">${p.emoji||''} ${p.name||r.platform} ${r.tradeType} Receipt — ${r.asset}</div>
+          <div class="gen-meta">${expStr} · ${r.days} days · $${r.totalCost}</div>
+        </div>
+        <div class="gen-item-actions">
+          <button class="copy-btn" onclick="copyToClipboard('${url}')">
+            <span class="material-symbols-outlined">content_copy</span> Copy Link
+          </button>
+          <a class="view-btn" href="/view/${r.slug}" target="_blank">
+            <span class="material-symbols-outlined">open_in_new</span> View
+          </a>
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) {}
+}
+
+// ═══════════════════════════════════════════
+// PAYSTACK DEPOSIT
+// ═══════════════════════════════════════════
+function selectDeposit(amount) {
+  selectedDeposit = amount;
+  document.getElementById('deposit-amount').value = amount;
+  document.querySelectorAll('.deposit-chip').forEach(c => {
+    c.classList.toggle('selected', c.textContent === '$' + amount);
+  });
+}
+
+async function initiatePayment() {
+  const amount = parseFloat(document.getElementById('deposit-amount').value);
+  if (!amount || amount < 5) { toast('Minimum deposit is $5', 'error'); return; }
+
+  setLoading('deposit-btn', true);
+  try {
+    // Use Paystack inline popup
+    const handler = PaystackPop.setup({
+      key: PAYSTACK_KEY,
+      email: currentUser.email,
+      amount: Math.round(amount * 100), // kobo
+      currency: 'NGN',
+      ref: 'TV' + Date.now(),
+      metadata: { userId: currentUser.id, depositAmount: amount },
+      onClose: function() {
+        toast('Payment window closed', 'error');
+        setLoading('deposit-btn', false);
+      },
+      callback: async function(response) {
+        try {
+          const res = await apiCall('POST', '/api/payment/verify', { reference: response.reference });
+          currentUser.balance = res.balance;
+          updateUserUI(res.balance);
+          toast(`Deposit successful! $${amount} added to wallet 🎉`, 'success');
+          await loadDashboard();
+          showPanel('home');
+        } catch(e) {
+          toast('Payment verification failed: ' + e.message, 'error');
+        }
+        setLoading('deposit-btn', false);
+      }
+    });
+    handler.openIframe();
+  } catch (e) {
+    toast(e.message, 'error');
+    setLoading('deposit-btn', false);
+  }
+}
+
+async function verifyPayment(reference) {
+  try {
+    const res = await apiCall('POST', '/api/payment/verify', { reference });
+    currentUser.balance = res.balance;
+    updateUserUI(res.balance);
+    toast(`Payment verified! $${res.amount} added to wallet`, 'success');
+    await loadDashboard();
+    showPanel('home');
+  } catch(e) {}
+}
+
+// ═══════════════════════════════════════════
+// UTILITIES
+// ═══════════════════════════════════════════
+function toast(msg, type = 'success') {
+  const el = document.getElementById('toast');
+  const icon = el.querySelector('.material-symbols-outlined');
+  el.className = 'show ' + type;
+  icon.textContent = type === 'success' ? 'check_circle' : 'error';
+  document.getElementById('toast-msg').textContent = msg;
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(() => el.classList.remove('show'), 3500);
+}
+
+// Store original button inner HTML on first load
+const _btnOriginals = {};
+function setLoading(btnId, loading) {
+  const btn = document.getElementById(btnId);
+  if (!btn) return;
+  const inner = btn.querySelector('.inner');
+  if (!inner) { btn.disabled = loading; return; }
+
+  if (loading) {
+    // Save original content before overwriting
+    if (!_btnOriginals[btnId]) _btnOriginals[btnId] = inner.innerHTML;
+    btn.disabled = true;
+    inner.innerHTML = `<span style="display:flex;align-items:center;gap:4px;justify-content:center">
+      <span class="bar" style="height:12px;margin:0 2px"></span>
+      <span class="bar" style="height:18px;margin:0 2px;animation-delay:.25s"></span>
+      <span class="bar" style="height:12px;margin:0 2px;animation-delay:.5s"></span>
+    </span>`;
+  } else {
+    btn.disabled = false;
+    if (_btnOriginals[btnId]) {
+      inner.innerHTML = _btnOriginals[btnId];
+    }
+  }
+}
+
+function copyToClipboard(text) {
+  navigator.clipboard.writeText(text).then(() => toast('Link copied!', 'success'));
+}
+
+// ═══════════════════════════════════════════
+// KEYBOARD SHORTCUTS
+// ═══════════════════════════════════════════
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    if (document.getElementById('login-form').style.display !== 'none' &&
+        document.getElementById('auth-page').classList.contains('active')) handleLogin();
+    if (document.getElementById('register-form').style.display !== 'none' &&
+        document.getElementById('auth-page').classList.contains('active')) handleRegister();
+  }
+});
+
+// ═══════════════════════════════════════════
+// START
+// ═══════════════════════════════════════════
+window.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
